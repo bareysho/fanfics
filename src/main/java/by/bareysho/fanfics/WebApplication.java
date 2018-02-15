@@ -1,0 +1,51 @@
+package by.bareysho.fanfics;
+
+import com.cloudinary.Cloudinary;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import javax.servlet.MultipartConfigElement;
+
+@SpringBootApplication
+public class WebApplication extends SpringBootServletInitializer {
+
+    public static void main(String[] args) {
+        SpringApplication.run(WebApplication.class, args);
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        factory.setMaxFileSize("128KB");
+        factory.setMaxRequestSize("128KB");
+        return factory.createMultipartConfig();
+    }
+
+    @Value("${cloudinary.cloud_name}")
+    private  String cloudinaryCloudName;
+
+    @Value("${cloudinary.api_key}")
+    private String cloudinaryApiKey;
+
+    @Value("${cloudinary.api_secret}")
+    private String cloudinaryApiSecret;
+
+    @Bean
+    public Cloudinary cloudinary() {
+        return  new Cloudinary(Cloudinary.asMap(
+                "cloud_name", cloudinaryCloudName,
+                "api_key", cloudinaryApiKey,
+                "api_secret", cloudinaryApiSecret));
+
+    }
+}
