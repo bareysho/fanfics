@@ -1,6 +1,7 @@
 package by.bareysho.fanfics.controller;
 
 import by.bareysho.fanfics.mail.OnRegistrationCompleteEvent;
+import by.bareysho.fanfics.model.Chapter;
 import by.bareysho.fanfics.model.CustomUser;
 import by.bareysho.fanfics.service.EmailTokenService;
 import by.bareysho.fanfics.service.SecurityService;
@@ -44,49 +45,6 @@ public class UserController {
         model.addAttribute("userForm", new CustomUser());
 
         return "registration";
-    }
-
-//    @RequestMapping(value = "/upload", method = RequestMethod.GET)
-//    public @ResponseBody
-//    String provideUploadInfo() {
-//        System.out.println("upload!!!!!");
-//        System.out.println("Вы можете загружать файл с использованием того же URL.");
-//        return "Вы можете загружать файл с использованием того же URL.";
-//    }
-
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public String upload(@RequestPart("files") MultipartFile file) {
-
-        try {
-            System.out.println(file.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("upload!!!!!");
-//        if (!file.isEmpty()) {
-//            try {
-//                byte[] bytes = file.getBytes();
-//                BufferedOutputStream stream =
-//                        new BufferedOutputStream(new FileOutputStream(new File(name + "-uploaded")));
-//                stream.write(bytes);
-//                stream.close();
-//                System.out.println("Вы удачно загрузили " + name + " в " + name + "-uploaded !");
-//                return "Вы удачно загрузили " + name + " в " + name + "-uploaded !";
-//            } catch (Exception e) {
-//                System.out.println("Вам не удалось загрузить " + name + " => " + e.getMessage());
-//                return "Вам не удалось загрузить " + name + " => " + e.getMessage();
-//            }
-//        } else {
-//            System.out.println("Вам не удалось загрузить " + name + " потому что файл пустой.");
-//            return "Вам не удалось загрузить " + name + " потому что файл пустой.";
-//        }
-        return "dawd";
-    }
-
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
-    public String create(Model model) {
-        model.addAttribute("fanficForm", new Fanfic());
-        return "create";
     }
 
     @RequestMapping(value = "/profile", method = RequestMethod.GET)

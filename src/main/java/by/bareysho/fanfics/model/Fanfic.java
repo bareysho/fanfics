@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -27,7 +28,7 @@ public class Fanfic {
     @NotNull
     @Length(min = 3)
     @Field
-    private String name;
+    private String fanficName;
 
     @Field
     private int genreId;
@@ -40,5 +41,11 @@ public class Fanfic {
     @Length(min = 5, max = 100)
     private String description;
 
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "creator_id")
+    private CustomUser creator;
+
+    @OneToMany(mappedBy = "ovnerFanfic", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Collection<Chapter> chapters;
 
 }
