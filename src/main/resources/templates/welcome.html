@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+
+    <link type="text/css" rel="stylesheet" media="all" href='' id="theme_css"/>
+
+</head>
+<body>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 th:text="#{label.allFanfics}"></h2>
+            <hr>
+            <div th:each="fanfic : ${allFanfics}">
+                <div style="width: 350px;" class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <div style="height: 250px;background-color: rgba(0,0,0,0.11); overflow: hidden;position: relative">
+                            <img style="width: 100%;  margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0;"
+                                 th:src="${fanfic.image}" alt="fanfic image"/>
+                        </div>
+
+                        <div class="caption">
+                            <h4 th:text="${fanfic.fanficName}"></h4>
+                            <p><b th:text="#{label.genre} + '&#58 '"></b><span th:inline="text">[[${fanfic.genreId}]]</span></p>
+                            <p><b th:text="#{label.description} + '&#58 '"></b></p>
+                            <div style="height: 70px; padding-bottom: 20px;" class="box">
+                                <div>
+                                    <p th:text="${fanfic.description}"></p>
+                                </div>
+                            </div>
+                            <script>
+                                $(function() {
+                                    $('.box').truncateText();
+                                });
+                            </script>
+
+                            <p><a th:href="'/readFanfic/' + ${fanfic.id}" class="btn btn-primary" th:text="#{button.read}"></a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function ($) {
+        var truncate = function (el) {
+            var text = el.text(),
+                height = el.height(),
+                clone = el.clone();
+
+            clone.css({
+                position: 'absolute',
+                visibility: 'hidden',
+                height: 'auto'
+            });
+            el.after(clone);
+
+            var l = text.length - 1;
+            for (; l >= 0 && clone.height() > height; --l) {
+                clone.text(text.substring(0, l) + '...');
+            }
+
+            el.text(clone.text());
+            clone.remove();
+        };
+
+        $.fn.truncateText = function () {
+            return this.each(function () {
+                truncate($(this));
+            });
+        };
+    }(jQuery));
+</script>
+<script src="/js/change-theme.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+</body>
+</html>

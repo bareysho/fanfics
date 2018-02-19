@@ -8,6 +8,8 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -56,9 +58,11 @@ public class UloginAuthentificationProvider implements AuthenticationProvider {
             uLoginUser.setPassword(getStringProp(obj, "identity"));
             uLoginUser.setEnabled(true);
 
+
             uLoginAuthToken.setuLoginUser(uLoginUser);
             uLoginAuthToken.setAuthenticated(true);
 
+            System.out.println(uLoginAuthToken.getAuthorities());
 
         } catch (Exception ex) {
             uLoginAuthToken.setAuthenticated(false);

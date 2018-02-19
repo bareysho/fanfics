@@ -26,6 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         CustomUser user = userRepository.findByUsername(username);
+        System.out.println("vot eto adwdwadawdaw" + username);
         if (user == null) {
             throw new UsernameNotFoundException("No user found with username: " + username);
         }

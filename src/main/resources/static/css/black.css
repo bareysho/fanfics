@@ -1,0 +1,31 @@
+body {
+    background-color: #484848;
+    color: #ffffff;
+    transition: all 0.15s ease-out;
+}
+
+.dark-primary-color    { background: #ff0e00; }
+.default-primary-color { background: #9e7b00; }
+.light-primary-color   { background: #F5F5F5; }
+.text-primary-color    { color: #212121; }
+.accent-color          { background: #607D8B; }
+.primary-text-color    { color: #212121; }
+.secondary-text-color  { color: #757575; }
+.divider-color         { border-color: #BDBDBD; }
+
+.btn btn-secondary {
+    background-color: white !important;
+}
+
+.fanficText {
+    background-color: #484848;
+}
+
+li {
+    color: white;
+
+}
+
+.panel-body {
+    background-color: #484848;
+}

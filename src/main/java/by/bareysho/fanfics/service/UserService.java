@@ -26,4 +26,6 @@ public interface UserService {
 
     CustomUser getLoginUser();
 
+    CustomUser findByConfirmationToken(String token);
+
 }

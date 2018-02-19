@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Log in with your account</title>
+
+
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+
+    <link type="text/css" rel="stylesheet" media="all" href='' id="theme_css"/>
+</head>
+
+<body class="gray-bg">
+<div th:replace="fragments/header :: header">&nbsp;</div>
+
+<div class="middle-box text-center loginscreen animated fadeInDown">
+    <div class="row">
+        <form th:action="@{/login}" method="POST" class="form-signin" autocomplete="off" role="form">
+
+            <script src="//ulogin.ru/js/ulogin.js"></script>
+            <div class="row">
+                <div style="margin-top:10px;" id="uLogin" class="col-lg-6 col-md-6 col-sm-6 col-xs-6"
+                     data-ulogin="display=panel;theme=classic;fields=first_name,last_name;providers=vkontakte,facebook,twitter;hidden=;redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fulogin;mobilebuttons=0;"></div>
+                <div class="col-xs-1 visible-xs"></div>
+                <h3 th:text="#{login.title}"
+                    class=" col-lg-offset-1 col-lg-5 col-md-offset-1 col-md-5 col-sm-offset-1 col-sm-5 col-xs-5"></h3>
+            </div>
+
+            <div class="form-group">
+
+                <div class="form-group input-group has-feedback">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-user"></span>
+                    </span>
+
+                    <input name="username" type="text" id="username"
+                           th:placeholder="#{button.username}" class="form-control" required/>
+                    <span class="glyphicon form-control-feedback"
+                          aria-hidden="true"></span>
+                </div>
+
+                <div class="form-group input-group">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-lock"></span>
+                    </span>
+                    <input name="password" type="password" id="password"
+                           th:placeholder="#{button.password}" class="form-control" required/>
+                    <span class="glyphicon"
+                          aria-hidden="true"></span>
+                </div>
+
+                <div align="center" th:if="${param.error}">
+                    <p th:text="#{login.errMsg}"></p>
+                </div>
+
+                <button type="submit"
+                        class="btn btn-primary block full-width m-b" th:text="#{button.login}">
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<script src="/js/change-theme.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Email confirmation</title>
+
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+
+    <link type="text/css" rel="stylesheet" media="all" href='' id="theme_css"/>
+</head>
+<body>
+
+<div class="container">
+
+    <a th:inline="text"><span th:text="#{header.greeting}"></span>,
+        [[${#httpServletRequest.userPrincipal.name}]]</a>
+
+    <h2 th:inline="text">Dear</span>, [[${#httpServletRequest.userPrincipal.name}]]
+        You registered successfully, but you need to confirm email. </h2>
+
+    <h3>We sent you a confirmation mail. Follow the link from your email to confirm registration</h3>
+    <form method="POST" th:action="@{/sendEmailConfirmation}">
+        <button type="submit">Resend</button>
+    </form>
+</div>
+
+<script src="/js/change-theme.js"></script>
+</body>
+</html>

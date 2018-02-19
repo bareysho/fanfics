@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
+    <link href="resources/css/card.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" media="all" href='' id="theme_css"/>
+</head>
+<body class="gray-bg">
+<div th:replace="fragments/header :: header">&nbsp;</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 th:text="#{label.userInfo}"></h2>
+            <hr>
+        </div>
+
+
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <img style="width: 90%; max-width: 300px; align-content: center"
+                     src="https://www.filecluster.com/howto/wp-content/uploads/2014/07/User-Default.jpg">
+            </div>
+
+            <div class="col-md-8">
+                <form class="form-horizontal">
+                    <fieldset>
+
+                        <!-- Text input-->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" th:text="#{button.username}" for="username"></label>
+                            <div class="col-md-4">
+                                <input id="username" name="textinput" th:placeholder="#{button.username}"
+                                       class="form-control input-md" value="" th:attr="value=${username}"
+                                       required="" type="text"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" th:text="#{label.firstname}" for="username"></label>
+                            <div class="col-md-4">
+                                <input id="firstname" name="textinput" th:placeholder="#{label.firstname}"
+                                       class="form-control input-md" value="" th:attr="value=${firstname}"
+                                       required="" type="text"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" th:text="#{label.lastname}" for="username"></label>
+                            <div class="col-md-4">
+                                <input id="lastname" name="textinput" th:placeholder="#{label.lastname}"
+                                       class="form-control input-md" value="" th:attr="value=${lastname}"
+                                       required="" type="text"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="email">Email</label>
+                            <div class="col-md-4">
+                                <input id="email" name="textinput" placeholder="Email"
+                                       class="form-control input-md" value="" th:attr="value=${email}"
+                                       trequired="" type="text">
+
+                            </div>
+                        </div>
+
+                        <!-- Text input-->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" th:text="#{button.password}" for="password"></label>
+                            <div class="col-md-4">
+                                <input id="password" name="textinput" th:placeholder="#{button.password}"
+                                       class="form-control input-md"
+                                       required="" type="text"/>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" th:text="#{button.confirmPassword}"
+                                   for="confpassword"></label>
+                            <div class="col-md-4">
+                                <input id="confpassword" name="textinput" th:placeholder="#{button.confirmPassword}"
+                                       class="form-control input-md" required="" type="text">
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-4 control-label">
+                                <button type="submit"
+                                        class="btn btn-primary block full-width m-b" th:text="#{button.save}">
+                                </button>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="col-md-12">
+            <h2 th:text="#{label.userFanfics}"></h2>
+            <hr>
+            <div th:each="fanfic : ${userFanfics}">
+                <div style="width: 350px;" class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <div style="height: 250px;background-color: rgba(0,0,0,0.11); overflow: hidden;position: relative">
+                            <img style="width: 100%;  margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0;"
+                                 th:src="${fanfic.image}" alt="fanfic image"/>
+                        </div>
+
+                        <div class="caption">
+                            <h4 th:text="${fanfic.fanficName}"></h4>
+                            <p><b th:text="#{label.genre} + '&#58 '"></b><span th:inline="text">[[${fanfic.genreId}]]</span></p>
+                            <p><b th:text="#{label.description} + '&#58 '"></b></p>
+                            <div style="height: 70px; padding-bottom: 20px;" class="box">
+                                <div>
+                                    <p th:text="${fanfic.description}"></p>
+                                </div>
+                            </div>
+                            <script>
+                                $(function() {
+                                    $('.box').truncateText();
+                                });
+                            </script>
+
+                            <p><a th:href="'/readFanfic/' + ${fanfic.id}" class="btn btn-primary" th:text="#{button.read}"></a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function ($) {
+        var truncate = function (el) {
+            var text = el.text(),
+                height = el.height(),
+                clone = el.clone();
+
+            clone.css({
+                position: 'absolute',
+                visibility: 'hidden',
+                height: 'auto'
+            });
+            el.after(clone);
+
+            var l = text.length - 1;
+            for (; l >= 0 && clone.height() > height; --l) {
+                clone.text(text.substring(0, l) + '...');
+            }
+
+            el.text(clone.text());
+            clone.remove();
+        };
+
+        $.fn.truncateText = function () {
+            return this.each(function () {
+                truncate($(this));
+            });
+        };
+    }(jQuery));
+</script>
+<script src="/js/change-theme.js"></script>
+
+</body>
+</html>

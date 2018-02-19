@@ -27,8 +27,17 @@ public class CustomUser {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
     @Transient
     private String confirmPassword;
+
+    @Column(name = "confirmation_token")
+    private String confirmationToken;
 
     @Column(name = "enabled")
     private boolean enabled;
@@ -43,5 +52,9 @@ public class CustomUser {
 
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<Fanfic> fanfics;
+
+    public String getFullName(){
+        return firstName + " " + lastName;
+    }
 
 }

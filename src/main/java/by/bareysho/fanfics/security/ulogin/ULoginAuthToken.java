@@ -2,8 +2,11 @@ package by.bareysho.fanfics.security.ulogin;
 
 import by.bareysho.fanfics.model.CustomUser;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 
-class ULoginAuthToken extends AbstractAuthenticationToken {
+import java.util.Collection;
+
+public class ULoginAuthToken extends AbstractAuthenticationToken {
     private final String token;
     private CustomUser uLoginUser;
 
@@ -11,6 +14,12 @@ class ULoginAuthToken extends AbstractAuthenticationToken {
         super(null);
         this.token = token;
     }
+
+    public ULoginAuthToken(String token, Collection<GrantedAuthority> grantedAuthorities) {
+        super(grantedAuthorities);
+        this.token = token;
+    }
+
 
     public CustomUser getuLoginUser() {
         return uLoginUser;
@@ -33,5 +42,7 @@ class ULoginAuthToken extends AbstractAuthenticationToken {
     public String getName() {
         return uLoginUser.getUsername();
     }
+
+
 }
 

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Fanfic</title>
+
+    <link href="../resources/css/accordion.css" rel="stylesheet">
+    <link href="../resources/css/comments.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.js"></script>
+
+    <link type="text/css" rel="stylesheet" media="all" href='' id="theme_css"/>
+</head>
+
+<body>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+
+<div class="container">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 th:text="${currentFanfic.fanficName}"></h3>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div style="height: 250px;width:100%; background-color: rgba(245,245,245,0.92); overflow: hidden;position: relative">
+                                <img style="width: 100%;  margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0;"
+                                     th:src="${currentFanfic.getImage()}" alt="fanfic image"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h4 th:text="#{label.genre} + '&#58 ' + ${currentFanfic.genreId}"></h4>
+                            <hr>
+                            <h4 th:text="#{label.description} + '&#58'"></h4>
+                            <p th:text="${currentFanfic.description}"></p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="fanficContent">
+                    <h2 th:text="#{label.content} +'&#58'"></h2>
+                    <ul th:each="chapter,iter : ${fanficChapters}">
+                        <a href="#">
+                            <li th:text="#{label.chapter} + ' ' + ${iter.index+1} + ' - ' + ${chapter.chapterName}"></li>
+                        </a>
+                    </ul>
+                </div>
+
+                <form th:action="@{'/createChapter/'+ ${currentFanfic.id}}">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary" id="js-upload-submit" th:text="#{label.addChapter}"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel-group" id="accordion">
+
+                <div th:each="chapter, iter : ${fanficChapters}" class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion"
+                               th:text="#{label.chapter} + ' ' + ${iter.index+1} + ' - ' + ${chapter.chapterName}"
+                               th:href="'#collapse' + ${chapter.id}"></a>
+                        </h4>
+                    </div>
+                    <div th:id="'collapse' + ${chapter.id}" class="panel-collapse collapse">
+                        <input type="hidden" th:id="'hiddenFieldText'+${chapter.id}" value=""
+                               th:attr="value=${chapter.text}">
+                        <div class="fanficText" th:id="'text' + ${chapter.id}" style="padding: 15px;">
+
+                        </div>
+
+                        <script type="text/javascript" th:inline="javascript">
+                            var id = [[${chapter.id}]]
+                            var html = document.getElementById("hiddenFieldText" + id).value;
+                            $('#text' + id).html(html);
+                        </script>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <form action="#" th:action="@{'/fanfics/' + ${currentFanfic.id} + '/comment/'}" th:object="${comment}"
+              method="post">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="title" th:text="#{label.comment}"></h4>
+                </div>
+                <div class="panel-body">
+                    <p class="category" th:text="#{label.msg}"></p>
+                    <textarea style="resize: none" class="form-control" id="text" name="text" rows="5"></textarea>
+                </div>
+                <div class="panel-body">
+                    <button class="btn btn-warning my_style" name="submit" type="submit"
+                            th:text="#{button.send}"></button>
+                </div>
+
+            </div>
+
+        </form>
+        <hr>
+        <div class="panel panel-default" th:each="comment : ${currentFanfic.comments}">
+            <div class="panel-heading">
+                <strong th:text="${comment.getUserCreator()}"></strong>
+                <span class="date" th:text="${comment.date}"></span>
+            </div>
+            <div class="panel-body" th:inline="text">
+                [[${comment.text}]]
+                <!--<%= link_to "Delete comment", [comment.project, comment], method: :delete %>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="padding-bottom: 120px;" class="container">
+
+</div>
+
+<script src="/js/change-theme.js"></script>
+
+</body>
+</html>

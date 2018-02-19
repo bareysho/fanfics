@@ -1,35 +1,66 @@
 package by.bareysho.fanfics.security.ulogin;
 
 import by.bareysho.fanfics.model.CustomUser;
+import by.bareysho.fanfics.model.Role;
+import by.bareysho.fanfics.repository.UserRepository;
+import by.bareysho.fanfics.service.UserService;
+import by.bareysho.fanfics.service.impl.UserServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashSet;
+import java.util.Set;
 
-public class UloginAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    public UloginAuthenticationFilter(String url) {
-        super(new AntPathRequestMatcher(url, "POST"));
+@Component
+public class UloginAuthenticationFilter {
 
-    }
+    @Autowired
+    private UserService userService;
 
-    @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        if (!request.getMethod().equals("POST")) {
-            throw new AuthenticationServiceException(
-                    "Authentication method not supported: " + request.getMethod());
-        }
+    @Autowired
+    private UloginAuthentificationProvider uloginAuthProvider;
+
+    public CustomUser attemptAuthentication(WebRequest request) {
+
         String token = request.getParameterValues("token")[0];
         ULoginAuthToken authRequest = new ULoginAuthToken(token);
-        Authentication auth = this.getAuthenticationManager().authenticate(authRequest);
 
-        CustomUser uLoginUser = (CustomUser) auth.getPrincipal();
-        request.getSession().setAttribute("username", uLoginUser.getUsername());
+        CustomUser loggedUser;
+        CustomUser customUser = (CustomUser) uloginAuthProvider.authenticate(authRequest).getPrincipal();
+        CustomUser dbUser = userService.findByUsername(customUser.getUsername());
 
-        return auth;
+        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+
+        if (dbUser == null){
+            userService.save(customUser);
+            grantedAuthorities.add(new SimpleGrantedAuthority("USER"));
+            loggedUser = customUser;
+
+        } else {
+            for (Role role : dbUser.getRoles()) {
+                grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+            }
+            loggedUser = dbUser;
+        }
+
+        Authentication authentication = uloginAuthProvider.authenticate(new ULoginAuthToken(token, grantedAuthorities));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return loggedUser;
     }
 }

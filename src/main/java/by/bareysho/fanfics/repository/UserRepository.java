@@ -13,4 +13,6 @@ public interface UserRepository extends JpaRepository<CustomUser, Long> {
     CustomUser findById(Long id);
 
     void removeCustomUserById(Long id);
+
+    CustomUser findByConfirmationToken(String token);
 }

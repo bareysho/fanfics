@@ -6,6 +6,8 @@ import by.bareysho.fanfics.service.ChapterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ChapterServiceImpl implements ChapterService {
 
@@ -18,7 +20,17 @@ public class ChapterServiceImpl implements ChapterService {
     }
 
     @Override
+    public List<Chapter> findAll() {
+        return chapterRepository.findAll();
+    }
+
+    @Override
     public void save(Chapter chapter) {
         chapterRepository.save(chapter);
+    }
+
+    @Override
+    public List<Chapter> findByFanficId(Long id) {
+        return chapterRepository.findByOvnerFanfic_Id(id);
     }
 }

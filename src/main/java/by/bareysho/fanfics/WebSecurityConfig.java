@@ -19,21 +19,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        UloginAuthenticationFilter uloginFilter = new UloginAuthenticationFilter("/ulogin");
-        uloginFilter.setAuthenticationManager(authenticationManager());
 
         http
-                .addFilterBefore(uloginFilter, AnonymousAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/css/*", "/js/*").permitAll()
-                .antMatchers("/", "/welcome", "/admin").authenticated()
-                .anyRequest().permitAll()
+                .antMatchers("/","/welcome","/register", "/login", "/ulogin", "/readFanfic/**").permitAll()
+                .anyRequest().authenticated()
+                .antMatchers("/admin").access("hasAuthority('ADMIN')")
                 .and()
-                .formLogin().loginPage("/login").permitAll()
+                .authorizeRequests().and().exceptionHandling().accessDeniedPage("/access-denied")
+                .and()
+                .formLogin().loginPage("/login")
+                .defaultSuccessUrl("/")
+                .failureUrl("/login?error=true")
                 .and()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll()
                 .and().csrf().disable();
-
     }
 
 
@@ -41,8 +42,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
+    private UloginAuthentificationProvider uloginAuthentificationProvider;
+
+    @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder()).and()
-                .authenticationProvider(new UloginAuthentificationProvider("localhost:8080"));
+                .authenticationProvider(uloginAuthentificationProvider);
     }
 }

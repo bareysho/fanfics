@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title th:text="#{admin.title}"></title>
+
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+
+    <link type="text/css" rel="stylesheet" media="all" href='' id="theme_css"/>
+</head>
+<body>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 th:text="#{admin.title}"></h2>
+            <hr>
+        </div>
+        <div class="col-md-12">
+            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group mr-2" role="group" aria-label="First group">
+                    <button type="submit" th:text="#{button.ban}" id='blockBtn' form="tableForm" class="btn btn-secondary" name="action"
+                            value="ban"
+                            disabled>
+                    </button>
+                    <button type="submit" th:text="#{button.unban}" id='unblockBtn' form="tableForm" class="btn btn-secondary" name="action"
+                            value="unban"
+                            disabled>
+                    </button>
+                    <button type="submit" th:text="#{button.delete}" form="tableForm" class="btn btn-secondary" name="action" value="delete"
+                            disabled>
+                    </button>
+                </div>
+            </div>
+
+            <table class="table table-hover">
+
+                <thead>
+
+                <th th:text="#{label.select}"></th>
+                <th th:text="#{button.username}"></th>
+                <th>Email</th>
+                <th th:text="#{label.status}"></th>
+
+                </thead>
+                <tbody>
+                <form id="tableForm" method="POST" th:action="@{/ReturnCheckedUsers}">
+                    <tr th:each="user : ${users}">
+                        <td><input type="checkbox" type='checkbox' name="checkthis" th:value="${user.id}"/></td>
+                        <td th:text="${user.username}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.banned} ? #{label.banned}: #{label.active}" >
+                        </td>
+                        <input type="checkbox" hidden name="isBaned" th:checked="${user.banned}"/>
+                    </tr>
+                </form>
+
+                <script type="text/javascript">
+                    var checkboxes = $("input[name='checkthis']"),
+                        banValues = $("input[name='isBaned']"),
+                        submitButt = $("button[name='action']");
+
+                    checkboxes.click(function () {
+                        submitButt.attr("disabled", !checkboxes.is(":checked"));
+                        var num = 0;
+                        jQuery.each(checkboxes, function () {
+                            if (checkboxes[num].checked === true && banValues[num].checked === true) {
+                                $("button[id='blockBtn']").attr("disabled", true);
+                            }
+                            if (checkboxes[num].checked === true && banValues[num].checked === false) {
+                                $("button[id='unblockBtn']").attr("disabled", true);
+                            }
+                            num++;
+                        });
+                    });
+                </script>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="/js/change-theme.js"></script>
+
+</body>
+</html>

@@ -12,9 +12,6 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-//@Indexed
-//@NoArgsConstructor
-//@AllArgsConstructor
 @Table(name = "fanfics")
 @Getter
 @Setter
@@ -38,7 +35,7 @@ public class Fanfic {
 
     @NotNull
     @Field
-    @Length(min = 5, max = 100)
+    @Length(min = 5, max = 500)
     private String description;
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
@@ -47,5 +44,8 @@ public class Fanfic {
 
     @OneToMany(mappedBy = "ovnerFanfic", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<Chapter> chapters;
+
+    @OneToMany(mappedBy = "ovnerFanfic", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Collection<Comment> comments;
 
 }

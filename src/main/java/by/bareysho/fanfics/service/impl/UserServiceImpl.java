@@ -36,6 +36,10 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    public CustomUser findByConfirmationToken(String confirmationToken) {
+        return userRepository.findByConfirmationToken(confirmationToken);
+    }
+
     @Override
     public CustomUser findByUsername(String username) {
         return userRepository.findByUsername(username);

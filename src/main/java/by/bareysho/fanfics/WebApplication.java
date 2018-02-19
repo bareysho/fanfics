@@ -1,17 +1,21 @@
 package by.bareysho.fanfics;
 
+import by.bareysho.fanfics.security.ulogin.UloginAuthentificationProvider;
 import com.cloudinary.Cloudinary;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.servlet.MultipartConfigElement;
 
 @SpringBootApplication
+@EnableAsync
 public class WebApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
@@ -22,6 +26,9 @@ public class WebApplication extends SpringBootServletInitializer {
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public UloginAuthentificationProvider uloginAuthentificationProvider() {return new UloginAuthentificationProvider("localhost:8080");}
 
     @Bean
     MultipartConfigElement multipartConfigElement() {

@@ -1,12 +1,10 @@
 package by.bareysho.fanfics.controller;
 
 import by.bareysho.fanfics.model.Chapter;
-import by.bareysho.fanfics.service.ChapterService;
-import by.bareysho.fanfics.service.FanficService;
-import by.bareysho.fanfics.service.ImageService;
+import by.bareysho.fanfics.model.Comment;
+import by.bareysho.fanfics.service.*;
 import by.bareysho.fanfics.model.CustomUser;
 import by.bareysho.fanfics.model.Fanfic;
-import by.bareysho.fanfics.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -23,16 +23,19 @@ import java.util.stream.Collectors;
 public class FanficController {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    ImageService imageService;
+    private ImageService imageService;
 
     @Autowired
-    FanficService fanficService;
+    private FanficService fanficService;
 
     @Autowired
-    ChapterService chapterService;
+    private ChapterService chapterService;
+
+    @Autowired
+    private CommentService commentService;
 
     @RequestMapping(value = "/createFanfic", method = RequestMethod.GET)
     public String createFanfic(Model model) {
@@ -83,6 +86,32 @@ public class FanficController {
 
         chapterService.save(chapter);
         return "redirect:/createFanfic";
+    }
+
+
+    @RequestMapping(value = "/readFanfic/{id}", method = RequestMethod.GET)
+    public String readFanfic(@PathVariable(value = "id") Long id, Model model){
+        Fanfic fanfic = fanficService.findById(id);
+        List<Chapter> chapters = chapterService.findByFanficId(id);
+
+        model.addAttribute("currentFanfic", fanfic);
+        model.addAttribute("fanficChapters", chapters);
+
+        return "fanfic";
+    }
+
+    @RequestMapping(value = {"/fanfics/{fanficid}/comment/"}, method = RequestMethod.POST)
+    public String saveComment(Model model, @PathVariable(value = "fanficid") Long id,
+                              @Valid Comment comment, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "redirect:/readFanfic/{fanficid}";
+        }
+        CustomUser user = userService.getLoginUser();
+        Fanfic fanfic = fanficService.findById(id);
+        comment.setUserCreator(user.getFullName());
+        comment.setOvnerFanfic(fanfic);
+        commentService.save(comment);
+        return "redirect:/readFanfic/" + id;
     }
 
 }

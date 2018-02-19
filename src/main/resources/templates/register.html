@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Register</title>
+
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+
+
+    <!--<link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">-->
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300|Material+Icons' rel='stylesheet'
+          type='text/css'>
+
+    <link type="text/css" rel="stylesheet" media="all" href='' id="theme_css"/>
+</head>
+
+<body class="gray-bg">
+<div th:replace="fragments/header :: header">&nbsp;</div>
+
+
+<div class="container">
+    <div class="row">
+        <div style="width: 40%; margin: auto;" class="middle-box text-center loginscreen animated fadeInDown">
+            <h2 th:text="#{register.header}"></h2>
+            <hr/>
+
+            <form autocomplete="off" action="#" th:action="@{/register}"
+                  th:object="${customUser}" method="post" class="m-t" role="form"
+                  data-toggle="validator">
+
+
+                <div th:if="${confirmationMessage}" class="alert alert-success"
+                     role="alert" th:text="${confirmationMessage}"></div>
+
+                <div th:if="${alreadyRegisteredMessage}"
+                     class="alert alert-danger" role="alert"
+                     th:text="${alreadyRegisteredMessage}"></div>
+
+                <div th:if="${#fields.hasErrors('username')}"
+                     th:errors="*{username}"
+                     class="validation-message alert alert-danger" role="alert"></div>
+
+                <div th:if="${#fields.hasErrors('firstName')}"
+                     th:errors="*{firstName}"
+                     class="validation-message alert alert-danger" role="alert"></div>
+
+                <div th:if="${#fields.hasErrors('lastName')}"
+                     th:errors="*{lastName}"
+                     class="validation-message alert alert-danger" role="alert"></div>
+
+                <div th:if="${#fields.hasErrors('password')}"
+                     th:errors="*{password}"
+                     class="validation-message alert alert-danger" role="alert"></div>
+
+                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+                     class="validation-message alert alert-danger" role="alert"></div>
+
+                <div class="form-group input-group has-feedback">
+                    <label th:if="${#fields.hasErrors('username')}"
+                           th:errors="*{username}" class="validation-message"></label>
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-user"></span>
+                    </span>
+
+                    <input type="text" th:field="*{username}"
+                           th:placeholder="#{button.username}" class="form-control" required/>
+                    <span class="glyphicon form-control-feedback"
+                          aria-hidden="true"></span>
+                </div>
+
+                <div class="form-group input-group has-feedback">
+                    <label th:if="${#fields.hasErrors('firstName')}"
+                           th:errors="*{firstName}" class="validation-message"></label>
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-user"></span>
+                    </span>
+
+                    <input type="text" th:field="*{firstName}"
+                           th:placeholder="#{label.firstname}" class="form-control" required/>
+                    <span class="glyphicon form-control-feedback"
+                          aria-hidden="true"></span>
+                </div>
+
+                <div class="form-group input-group has-feedback">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-user"></span>
+                    </span>
+                    <input type="text" th:field="*{lastName}"
+                           th:placeholder="#{label.lastname}" class="form-control" required/>
+                    <span class="glyphicon form-control-feedback"
+                          aria-hidden="true"></span>
+                </div>
+
+                <div class="form-group input-group has-feedback">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-envelope"></span>
+                    </span>
+                    <input type="email" th:field="*{email}"
+                           placeholder="Email" class="form-control"
+                           data-error="This email address is invalid" required/>
+                    <span class="glyphicon form-control-feedback"
+                          aria-hidden="true"></span>
+                </div>
+
+
+                <button type="submit"
+                        class="btn btn-primary block full-width m-b" th:text="#{button.register}">
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="/js/change-theme.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+
+</body>
+</html>
