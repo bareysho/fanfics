@@ -1,10 +1,7 @@
 package by.bareysho.fanfics.controller;
 
-import by.bareysho.fanfics.model.Chapter;
-import by.bareysho.fanfics.model.Comment;
+import by.bareysho.fanfics.model.*;
 import by.bareysho.fanfics.service.*;
-import by.bareysho.fanfics.model.CustomUser;
-import by.bareysho.fanfics.model.Fanfic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -37,19 +35,32 @@ public class FanficController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private TagService tagService;
+
     @RequestMapping(value = "/createFanfic", method = RequestMethod.GET)
     public String createFanfic(Model model) {
         model.addAttribute("fanficForm", new Fanfic());
+        model.addAttribute("allTags", tagService.findAllAsString());
         return "addFanfic";
     }
 
     @RequestMapping(value = {"/addFanfic"}, method = RequestMethod.POST)
-    public String addProject(Fanfic fanfic, @RequestPart("files") MultipartFile file,
+    public String addProject(Fanfic fanfic, @RequestPart("files") MultipartFile file, @RequestParam("stringtags") String addedTags,
                              BindingResult bindingResult, Model model) throws Exception {
 //        if (bindingResult.hasErrors()) {
 //            this.setProjectErrorCount(bindingResult.getErrorCount());
 //            return "redirect:/projects/new";
 //        }
+
+        Set<Tag> tags = fanfic.getTags();
+        String[] strTags = addedTags.split(",");
+        for(int i = 0; i < strTags.length; i++){
+            System.out.println(strTags[i]);
+            Tag newTag = new Tag();
+            newTag.setTagName(strTags[i]);
+            tags.add(newTag);
+        }
         CustomUser user = userService.getLoginUser();
         System.out.println(user.getUsername());
         fanfic.setImage(imageService.uploadPhoto(file.getBytes()));

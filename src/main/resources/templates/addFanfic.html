@@ -11,14 +11,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
     <meta name="format-detection" content="telephone=no">
 
+
+    <link rel="stylesheet" type="text/css"
+          href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
     <link href="http://fonts.googleapis.com/css?family=Roboto:400,300,700,900|Roboto+Condensed:400,300,700"
           rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="resources/css/demo.css">
-    <link rel="stylesheet" href="resources/css/dropify.min.css">
-    <link href="/css/style.css" rel="stylesheet">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+
+    <link href="/css/demo.css" rel="stylesheet">
+    <link href="/css/dropify.min.css" rel="stylesheet">
+    <link href="/css/jquery.tagit.css" rel="stylesheet" type="text/css">
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"
+            charset="utf-8"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js" type="text/javascript"
+            charset="utf-8"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" media="all" href='' id="theme_css"/>
 </head>
@@ -31,8 +40,8 @@
         <div style="width: 60%; margin: 35px auto;">
             <h2 th:text="#{label.addFanfic}"></h2>
             <hr>
-            <form th:action="@{/addFanfic}" th:object="${fanficForm}" enctype="multipart/form-data"
-                  method="post">
+            <form th:action="@{/addFanfic}" th:object="${fanficForm}" enctype="multipart/form-data" name="form"
+                  method="post" onsubmit="return false;">
 
                 <div class="form-group">
                     <label for="fanficName"><h4 th:text="#{label.title}"></h4></label>
@@ -60,13 +69,21 @@
 
                 <div class="form-group">
                     <label for="description"><h4 th:text="#{label.description}"></h4></label>
-                    <textarea class="form-control" th:field="*{description}" rows="5" id="description"></textarea>
+                    <textarea style="resize: none" class="form-control" th:field="*{description}" rows="5"
+                              id="description"></textarea>
                 </div>
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-lg btn-primary btn-block" id="js-upload-submit"
-                            th:text="#{label.addFanfic}">
-                    </button>
+                    <label for="singleFieldTags2"><h4 th:text="#{label.tags}"></h4></label>
+                    <form>
+                        <input name="stringtags" id="singleFieldTags2"/>
+                    </form>
+                </div>
+
+                <div class="form-group">
+                    <input type="button" class="btn btn-lg btn-primary btn-block" id="js-upload-submit"
+                           onclick="document.forms['form'].submit();" th:value="#{label.addFanfic}">
+                    </input>
                 </div>
 
             </form>
@@ -74,8 +91,19 @@
     </div>
 </div>
 
-<script src="/js/change-theme.js"></script>
-<script src="resources/js/dropify.min.js"></script>
+<script type="text/javascript" th:inline="javascript">
+    $(function () {
+        var sampleTags = [[${allTags}]];
+
+        $('#myTags').tagit();
+
+        $('#singleFieldTags2').tagit({
+            availableTags: sampleTags
+        });
+
+    });
+</script>
+
 <script>
     $(document).ready(function () {
         // Basic
@@ -112,6 +140,10 @@
         })
     });
 </script>
+
+<script src="/js/tag-it.js"></script>
+<script src="/js/change-theme.js"></script>
+<script src="/js/dropify.min.js"></script>
 
 </body>
 </html>
