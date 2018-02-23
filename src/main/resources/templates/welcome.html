@@ -23,30 +23,43 @@
         <div class="col-md-12">
             <h2 th:text="#{label.allFanfics}"></h2>
             <hr>
-            <div th:each="fanfic : ${allFanfics}">
-                <div style="width: 350px;" class="col-sm-6 col-md-4">
-                    <div class="thumbnail">
-                        <div style="height: 250px;background-color: rgba(0,0,0,0.11); overflow: hidden;position: relative">
-                            <img style="width: 100%;  margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0;"
-                                 th:src="${fanfic.image}" alt="fanfic image"/>
-                        </div>
-
-                        <div class="caption">
-                            <h4 th:text="${fanfic.fanficName}"></h4>
-                            <p><b th:text="#{label.genre} + '&#58 '"></b><span th:inline="text">[[${fanfic.genreId}]]</span></p>
-                            <p><b th:text="#{label.description} + '&#58 '"></b></p>
-                            <div style="height: 70px; padding-bottom: 20px;" class="box">
-                                <div>
-                                    <p th:text="${fanfic.description}"></p>
-                                </div>
+            <div id="fanfics">
+                <div th:each="fanfic : ${allFanfics}">
+                    <div style="width: 350px;" class="col-sm-6 col-md-4">
+                        <div class="thumbnail">
+                            <div style="height: 250px;background-color: rgba(0,0,0,0.11); overflow: hidden;position: relative">
+                                <img style="width: 100%;  margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0;"
+                                     th:src="${fanfic.image}" alt="fanfic image"/>
                             </div>
-                            <script>
-                                $(function() {
-                                    $('.box').truncateText();
-                                });
-                            </script>
 
-                            <p><a th:href="'/readFanfic/' + ${fanfic.id}" class="btn btn-primary" th:text="#{button.read}"></a></p>
+                            <div class="caption">
+                                <h4 th:text="${fanfic.fanficName}"></h4>
+                                <p><b th:text="#{label.genre} + '&#58 '"></b><span
+                                        th:text="${fanfic.getGenresAsSting()}"> </span>
+                                </p>
+                                <p><b th:text="#{label.description} + '&#58 '"></b></p>
+                                <div style="height: 70px; padding-bottom: 20px;" class="box">
+                                    <div>
+                                        <p th:text="${fanfic.description}"></p>
+                                    </div>
+                                </div>
+                                <script>
+                                    $(function () {
+                                        $('.box').truncateText();
+                                    });
+                                </script>
+
+                                <p><a th:href="'/readFanfic/' + ${fanfic.id}" class="btn btn-primary btn-sm"
+                                      th:text="#{button.read}"></a>
+                                    <a th:if="${currentUser!=null and (currentUser.id == fanfic.creator.id or currentUser.hasRole('ADMIN'))}"
+                                       th:href="'/fanfics/' + ${fanfic.id} + '/edit'"
+                                       class="btn btn-primary btn-sm" th:text="#{button.edit}"></a>
+                                    <a th:if="${currentUser!=null and (currentUser.id == fanfic.creator.id or currentUser.hasRole('ADMIN'))}"
+                                       th:href="'javascript:ajax_delete(' + ${fanfic.id} + ')'"
+                                       class="btn btn-primary btn-sm"
+                                       th:text="#{button.delete}"></a>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -56,6 +69,18 @@
 </div>
 
 <script>
+    function ajax_delete(id) {
+        $.ajax({
+
+            type: 'POST',
+            url: '/fanfics/' + id + '/page_welcome/delete',
+            success: function (data) {
+                $("#fanfics").html(data);
+            }
+
+        });
+    }
+
     (function ($) {
         var truncate = function (el) {
             var text = el.text(),

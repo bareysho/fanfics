@@ -2,42 +2,36 @@ package by.bareysho.fanfics.model;
 
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Set;
 
-/**
- * Simple JavaBean object that represents role of {@link CustomUser}.
- *
- * @author Eugene Suleimanov
- * @version 1.0
- */
 
-@Entity
-@Table(name = "roles")
+@Entity(name = "roles")
 @Getter
 @Setter
-@NoArgsConstructor
 public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "role_id")
     private Long id;
-
-    @Column(name = "name")
-    private String name;
 
     @ManyToMany(mappedBy = "roles")
     private Set<CustomUser> users;
 
-    @Override
-    public String toString() {
-        return "Role{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", users=" + users +
-                '}';
+    @Column(name = "role_name")
+    private String roleName;
+
+    public Role(){
     }
+//
+//    @Override
+//    public boolean equals(Object o) {
+//        if (o == null || !(o instanceof Role)) {
+//            return false;
+//        }
+//        return this.name.equals(((Role) o).name);
+//    }
 }

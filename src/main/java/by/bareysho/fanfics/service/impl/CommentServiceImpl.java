@@ -23,4 +23,9 @@ public class CommentServiceImpl implements CommentService {
     public void save(Comment comment) {
         commentRepository.save(comment);
     }
+
+    @Override
+    public Comment findById(Long id) {
+        return commentRepository.findById(id);
+    }
 }

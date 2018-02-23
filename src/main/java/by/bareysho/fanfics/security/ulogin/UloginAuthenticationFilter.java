@@ -2,7 +2,9 @@ package by.bareysho.fanfics.security.ulogin;
 
 import by.bareysho.fanfics.model.CustomUser;
 import by.bareysho.fanfics.model.Role;
+import by.bareysho.fanfics.repository.RoleRepository;
 import by.bareysho.fanfics.repository.UserRepository;
+import by.bareysho.fanfics.service.RoleService;
 import by.bareysho.fanfics.service.UserService;
 import by.bareysho.fanfics.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class UloginAuthenticationFilter {
     private UserService userService;
 
     @Autowired
+    private RoleService roleService;
+
+    @Autowired
     private UloginAuthentificationProvider uloginAuthProvider;
 
     public CustomUser attemptAuthentication(WebRequest request) {
@@ -47,13 +52,21 @@ public class UloginAuthenticationFilter {
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 
         if (dbUser == null){
-            userService.save(customUser);
             grantedAuthorities.add(new SimpleGrantedAuthority("USER"));
+            grantedAuthorities.add(new SimpleGrantedAuthority("SOC_USER"));
+
+            Set<Role> roles = new HashSet<>();
+            roles.add(roleService.findByName("USER"));
+            roles.add(roleService.findByName("SOC_USER"));
+            customUser.setRoles(roles);
+
+            userService.save(customUser);
             loggedUser = customUser;
 
         } else {
+
             for (Role role : dbUser.getRoles()) {
-                grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+                grantedAuthorities.add(new SimpleGrantedAuthority(role.getRoleName()));
             }
             loggedUser = dbUser;
         }

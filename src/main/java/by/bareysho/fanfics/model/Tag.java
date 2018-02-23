@@ -12,6 +12,7 @@ import java.util.Set;
 @Setter
 @Entity(name = "tags")
 public class Tag {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "tag_id")
@@ -23,11 +24,6 @@ public class Tag {
     @Column(name = "tag_name")
     @Field
     private String tagName;
-
-    public Tag(String tagName, Set<Fanfic> projects) {
-        this.tagName = tagName;
-        this.fanfics = projects;
-    }
 
     public Tag() {
     }

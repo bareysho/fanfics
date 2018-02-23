@@ -49,7 +49,10 @@
                 </div>
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-lg btn-primary btn-block" id="js-upload-submit" th:text="#{label.addChapter}"></button>
+                    <button type="submit" class="btn btn-primary" id="js-upload-submit"
+                            th:text="#{label.addChapter}"></button>
+                    <a th:href="'/fanfics/' + ${fanficToAddChapter.id} + '/edit'"
+                       class="btn btn-primary" th:text="#{button.cancel}"></a>
                 </div>
             </form>
 

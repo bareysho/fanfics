@@ -1,16 +1,11 @@
 package by.bareysho.fanfics.controller;
 
-import by.bareysho.fanfics.model.CustomUser;
-import by.bareysho.fanfics.model.Role;
+import by.bareysho.fanfics.model.*;
 import by.bareysho.fanfics.security.ulogin.ULoginAuthToken;
 import by.bareysho.fanfics.security.ulogin.UloginAuthenticationFilter;
 import by.bareysho.fanfics.security.ulogin.UloginAuthentificationProvider;
-import by.bareysho.fanfics.service.EmailTokenService;
-import by.bareysho.fanfics.service.FanficService;
-import by.bareysho.fanfics.service.SecurityService;
-import by.bareysho.fanfics.service.UserService;
+import by.bareysho.fanfics.service.*;
 import by.bareysho.fanfics.validator.UserValidator;
-import by.bareysho.fanfics.model.Fanfic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,12 +13,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +38,15 @@ public class UserController {
     @Autowired
     private FanficService fanficService;
 
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private GenreService genreService;
+
 //    @RequestMapping(value = "/registration", method = RequestMethod.GET)
 //    public String registration(Model model) {
 //        model.addAttribute("userForm", new CustomUser());
@@ -53,6 +60,7 @@ public class UserController {
 
         List<Fanfic> fanfics = fanficService.findByUserId(dbCustomUser.getId());
         System.out.println(fanfics);
+        model.addAttribute("currentUser", dbCustomUser);
 
         model.addAttribute("username", dbCustomUser.getUsername());
         model.addAttribute("email", dbCustomUser.getEmail());
@@ -89,7 +97,9 @@ public class UserController {
     @RequestMapping(value = {"/", "welcome"}, method = RequestMethod.GET)
     public String welcome(Model model) {
         List<Fanfic> fanfics = fanficService.findAll();
+        CustomUser customUser = userService.getLoginUser();
 
+        model.addAttribute("currentUser", customUser);
         model.addAttribute("allFanfics", fanfics);
 
         return "welcome";
@@ -119,6 +129,37 @@ public class UserController {
 //        return "redirect:";
 //    }
 
+    @RequestMapping(value = {"/users/{userid}"}, method = RequestMethod.POST)
+    public String updateFanfic(Model model, CustomUser user, @RequestPart(value = "files", required = false) MultipartFile file,
+                               @PathVariable(value = "userid") Long id) throws IOException {
+        CustomUser userBuf = userService.findById(id);
+
+        userBuf.setFirstName(user.getFirstName());
+        userBuf.setLastName(user.getLastName());
+        userBuf.setEmail(user.getEmail());
+
+        if (user.getPassword() != null) {
+            if (!user.getPassword().equals(userBuf.getPassword())) {
+                userBuf.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            }
+        }
+
+        if (!file.isEmpty()) {
+            userBuf.setProfileImg(imageService.uploadPhoto(file.getBytes()));
+        }
+
+
+        userService.save(userBuf);
+        return "redirect:/profile";
+    }
+
+    @RequestMapping(value = "/users/delete")
+    public String usersDelete(@RequestParam("checkthis") Long[] token){
+        System.out.println(token);
+
+        return "redirect:admin";
+    }
+
     @RequestMapping(value = "/ReturnCheckedUsers")
     public String returning(@RequestParam("checkthis") Long[] token, @RequestParam("action") String action) {
         if (action.equals("ban")) {
@@ -131,6 +172,8 @@ public class UserController {
             }
         } else if (action.equals("delete")) {
             for (int i = 0; i < token.length; i++) {
+                System.out.println(token[i]);
+//                fanficService.deleteByCreatorId(token[i]);
                 userService.deleteUserById(token[i]);
             }
         }

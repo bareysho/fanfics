@@ -62,8 +62,6 @@ public class UloginAuthentificationProvider implements AuthenticationProvider {
             uLoginAuthToken.setuLoginUser(uLoginUser);
             uLoginAuthToken.setAuthenticated(true);
 
-            System.out.println(uLoginAuthToken.getAuthorities());
-
         } catch (Exception ex) {
             uLoginAuthToken.setAuthenticated(false);
             LOG.error(ex.getMessage(), ex);

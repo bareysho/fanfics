@@ -7,10 +7,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Title</title>
 
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
+
+    <link href="/css/dropify.min.css" rel="stylesheet">
+
+
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
+
+
     <link href="/css/card.css" rel="stylesheet">
+
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
+    <script type="text/javascript"
+
+            src="http://demos.creative-tim.com/fresh-bootstrap-table/assets/js/bootstrap-table.js"></script>
+
+    <link rel="stylesheet"
+          href="http://demos.creative-tim.com/fresh-bootstrap-table/assets/css/fresh-bootstrap-table.css"
+          type="text/css"/>
+
+
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="/css/profile.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" media="all" href='' id="theme_css"/>
 </head>
@@ -24,74 +44,67 @@
             <hr>
         </div>
 
-
-        <div class="col-md-12">
+        <form th:action="'/users/' + ${currentUser.id}" th:object="${currentUser}" method="POST"
+              enctype="multipart/form-data">
             <div class="col-md-3">
-                <img style="width: 90%; max-width: 300px; align-content: center"
-                     src="https://www.filecluster.com/howto/wp-content/uploads/2014/07/User-Default.jpg">
+                <input type="file" name="files" id="input-file-now"
+                       th:attr="data-default-file=${currentUser.profileImg}"
+                       class="dropify"/>
             </div>
-
-            <div class="col-md-8">
-                <form class="form-horizontal">
-                    <fieldset>
-
+            <div class="col-md-5">
+                <fieldset>
+                    <div class="row">
                         <!-- Text input-->
                         <div class="form-group">
-                            <label class="col-md-4 control-label" th:text="#{button.username}" for="username"></label>
-                            <div class="col-md-4">
-                                <input id="username" name="textinput" th:placeholder="#{button.username}"
-                                       class="form-control input-md" value="" th:attr="value=${username}"
-                                       required="" type="text"/>
-                            </div>
+                            <label class="control-label" th:text="#{button.username}" for="username"></label>
+
+                            <input id="username" name="textinput" th:placeholder="#{button.username}"
+                                   class="form-control input-md" th:field="*{username}"
+                                   value="" th:attr="value=${currentUser.username}" disabled=""
+                                   required="" type="text"/>
+
                         </div>
 
                         <div class="form-group">
-                            <label class="col-md-4 control-label" th:text="#{label.firstname}" for="username"></label>
-                            <div class="col-md-4">
-                                <input id="firstname" name="textinput" th:placeholder="#{label.firstname}"
-                                       class="form-control input-md" value="" th:attr="value=${firstname}"
-                                       required="" type="text"/>
-                            </div>
+                            <label class="control-label" th:text="#{label.firstname}" for="username"></label>
+
+                            <input id="firstname" name="textinput" th:placeholder="#{label.firstname}"
+                                   class="form-control input-md" value="" th:attr="value=${currentUser.firstName}"
+                                   th:field="*{firstName}"
+                                   required="" type="text"/>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label" th:text="#{label.lastname}" for="username"></label>
+
+                            <input id="lastname" name="textinput" th:placeholder="#{label.lastname}"
+                                   class="form-control input-md" value="" th:attr="value=${currentUser.lastName}"
+                                   required="" type="text" th:field="*{lastName}"/>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-md-4 control-label" th:text="#{label.lastname}" for="username"></label>
-                            <div class="col-md-4">
-                                <input id="lastname" name="textinput" th:placeholder="#{label.lastname}"
-                                       class="form-control input-md" value="" th:attr="value=${lastname}"
-                                       required="" type="text"/>
-                            </div>
+                            <label class="control-label" for="email">Email</label>
+                            <input id="email" name="textinput" placeholder="Email"
+                                   class="form-control input-md" value="" th:field="*{email}"
+                                   th:attr="value=${currentUser.email}"
+                                   trequired="" type="text">
                         </div>
 
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="email">Email</label>
-                            <div class="col-md-4">
-                                <input id="email" name="textinput" placeholder="Email"
-                                       class="form-control input-md" value="" th:attr="value=${email}"
-                                       trequired="" type="text">
-
-                            </div>
+                        <div sec:authorize="!hasAuthority('SOC_USER')" class="form-group">
+                            <label class="control-label" th:text="#{button.password}" for="password"></label>
+                            <input id="password" name="textinput"
+                                   th:placeholder="#{button.password}" th:field="*{password}"
+                                   class="form-control input-md"
+                                   type="text"/>
                         </div>
 
-                        <!-- Text input-->
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" th:text="#{button.password}" for="password"></label>
-                            <div class="col-md-4">
-                                <input id="password" name="textinput" th:placeholder="#{button.password}"
-                                       class="form-control input-md"
-                                       required="" type="text"/>
-
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" th:text="#{button.confirmPassword}"
+                        <div sec:authorize="!hasAuthority('SOC_USER')" class="form-group">
+                            <label class="control-label" th:text="#{button.confirmPassword}"
                                    for="confpassword"></label>
-                            <div class="col-md-4">
-                                <input id="confpassword" name="textinput" th:placeholder="#{button.confirmPassword}"
-                                       class="form-control input-md" required="" type="text">
 
-                            </div>
+                            <input id="confpassword" name="textinput" th:placeholder="#{button.confirmPassword}"
+                                   class="form-control input-md" type="text">
                         </div>
 
                         <div class="form-group">
@@ -101,45 +114,132 @@
                                 </button>
                             </div>
                         </div>
-
-                    </fieldset>
-                </form>
+                    </div>
+                </fieldset>
             </div>
-        </div>
+        </form>
 
 
-        <div class="col-md-12">
+        <div class="col-md-12" id="userfanfics">
             <h2 th:text="#{label.userFanfics}"></h2>
             <hr>
-            <div th:each="fanfic : ${userFanfics}">
-                <div style="width: 350px;" class="col-sm-6 col-md-4">
-                    <div class="thumbnail">
-                        <div style="height: 250px;background-color: rgba(0,0,0,0.11); overflow: hidden;position: relative">
-                            <img style="width: 100%;  margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0;"
-                                 th:src="${fanfic.image}" alt="fanfic image"/>
-                        </div>
 
-                        <div class="caption">
-                            <h4 th:text="${fanfic.fanficName}"></h4>
-                            <p><b th:text="#{label.genre} + '&#58 '"></b><span th:inline="text">[[${fanfic.genreId}]]</span></p>
-                            <p><b th:text="#{label.description} + '&#58 '"></b></p>
-                            <div style="height: 70px; padding-bottom: 20px;" class="box">
-                                <div>
-                                    <p th:text="${fanfic.description}"></p>
-                                </div>
-                            </div>
-                            <script>
-                                $(function() {
-                                    $('.box').truncateText();
-                                });
-                            </script>
 
-                            <p><a th:href="'/readFanfic/' + ${fanfic.id}" class="btn btn-primary" th:text="#{button.read}"></a></p>
-                        </div>
-                    </div>
+            <div class="fresh-table">
+
+                <!-- Изменение фона таблицы: full-color-blue, full-color-azure, full-color-green, full-color-red, full-color-orange
+                Изменение фона тулбара страницы: toolbar-color-blue, toolbar-color-azure, toolbar-color-green, toolbar-color-red, toolbar-color-orange
+                -->
+
+                <div class="toolbar">
+                    <a href="/createFanfic" id="alertBtn" class="btn btn-default" th:text="#{label.addFanfic}"></a>
                 </div>
+
+
+                <table id="fresh-table" class="table">
+                    <thead>
+                    <th data-field="id">ID</th>
+                    <th data-field="name" data-sortable="true">Name</th>
+                    <th data-field="chaptersCount" data-sortable="true">Chapters count</th>
+                    <th data-field="actions" data-formatter="operateFormatter"
+                        data-events="operateEvents">Actions
+                    </th>
+                    </thead>
+                    <tbody id="trable">
+
+
+                    <tr th:each="fanfic : ${userFanfics}">
+                        <td th:text="${fanfic.id}"></td>
+                        <td><a th:text="${fanfic.fanficName}" th:href="'/readFanfic/' + ${fanfic.id}"></a></td>
+                        <td th:text="${fanfic.chapters.size()}"></td>
+                        <td></td>
+                    </tr>
+
+                    </tbody>
+                </table>
             </div>
+
+            <script>
+                var $table = $('#fresh-table')
+                $alertBtn = $('#alertBtn'),
+                    full_screen = false;
+
+                $().ready(function () {
+
+
+                    $table.bootstrapTable({
+                        toolbar: ".toolbar",
+
+                        search: true,
+                        showToggle: true,
+                        showColumns: true,
+                        pagination: true,
+                        striped: true,
+                        pageSize: 10,
+                        pageList: [10, 25, 50, 100],
+
+                        formatShowingRows: function (pageFrom, pageTo, totalRows) {
+                            //do nothing here, we don't want to show the text "showing x of y from..."
+                        },
+                        formatRecordsPerPage: function (pageNumber) {
+                            return pageNumber + " rows visible";
+                        },
+
+                        icons: {
+                            toggle: 'fa fa-th-list',
+                            columns: 'fa fa-columns',
+                            detailOpen: 'fa fa-plus-circle',
+                            detailClose: 'fa fa-minus-circle'
+                        }
+
+
+                    });
+
+
+                    $(window).resize(function () {
+                        $table.bootstrapTable('resetView');
+                    });
+
+
+                    window.operateEvents = {
+                        'click .edit': function (e, value, row, index) {
+
+                        },
+                        'click .remove': function (e, value, row, index) {
+
+                        }
+                    }
+
+                    window.operateEvents['click .edit'] = (function (e, value, row, index) {
+                        alert('You click edit icon, row: ' + JSON.stringify(row));
+                    });
+                });
+
+
+                function ajax_delete(id) {
+                    $.ajax({
+
+                        type: 'POST',
+                        url: '/fanfics/' + id + '/page_profile/delete',
+                        success: function (data) {
+                            $("#trable").html(data);
+                        }
+
+                    });
+                }
+
+                function operateFormatter(value, row, index) {
+                    return [
+                        '<a rel="tooltip" title="Edit" class="table-action edit" href="/fanfics/', row.id, '/edit" title="Edit">',
+                        '<i class="fa fa-edit"></i>',
+                        '</a>',
+                        '<a rel="tooltip" title="Remove" class="table-action remove" href="javascript:ajax_delete(', row.id, ')" title="Remove">',
+                        '<i class="fa fa-remove"></i>',
+                    ].join('');
+                }
+            </script>
         </div>
+
     </div>
 </div>
 
@@ -173,6 +273,45 @@
         };
     }(jQuery));
 </script>
+
+<script>
+    $(document).ready(function () {
+        // Basic
+        $('.dropify').dropify();
+        // Translated
+        $('.dropify-fr').dropify({
+            messages: {
+                default: 'Glissez-déposez un fichier ici ou cliquez',
+                replace: 'Glissez-déposez un fichier ou cliquez pour remplacer',
+                remove: 'Supprimer',
+                error: 'Désolé, le fichier trop volumineux'
+            }
+        });
+        // Used events
+        var drEvent = $('#input-file-events').dropify();
+        drEvent.on('dropify.beforeClear', function (event, element) {
+            return confirm("Do you really want to delete \"" + element.file.name + "\" ?");
+        });
+        drEvent.on('dropify.afterClear', function (event, element) {
+            alert('File deleted');
+        });
+        drEvent.on('dropify.errors', function (event, element) {
+            console.log('Has Errors');
+        });
+        var drDestroy = $('#input-file-to-destroy').dropify();
+        drDestroy = drDestroy.data('dropify')
+        $('#toggleDropify').on('click', function (e) {
+            e.preventDefault();
+            if (drDestroy.isDropified()) {
+                drDestroy.destroy();
+            } else {
+                drDestroy.init();
+            }
+        })
+    });
+</script>
+
+<script src="/js/dropify.min.js"></script>
 <script src="/js/change-theme.js"></script>
 
 </body>

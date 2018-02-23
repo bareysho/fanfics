@@ -1,6 +1,10 @@
 package by.bareysho.fanfics.controller;
 
+import by.bareysho.fanfics.model.CustomUser;
+import by.bareysho.fanfics.model.Role;
 import by.bareysho.fanfics.security.ulogin.UloginAuthenticationFilter;
+import by.bareysho.fanfics.service.RoleService;
+import by.bareysho.fanfics.service.UserService;
 import by.bareysho.fanfics.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,11 +15,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Controller
 public class LoginController {
 
     @Autowired
     private UloginAuthenticationFilter uloginAuthProvider;
+
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(value={"/login"}, method = RequestMethod.GET)
     public ModelAndView login(){
@@ -27,6 +40,7 @@ public class LoginController {
     @RequestMapping(value = "/ulogin", method = RequestMethod.POST)
     public String checkAuthorization(WebRequest request) {
         uloginAuthProvider.attemptAuthentication(request);
+
         return "redirect:";
     }
 }

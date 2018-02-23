@@ -9,4 +9,6 @@ public interface ChapterService {
     List<Chapter> findAll();
     void save(Chapter chapter);
     List<Chapter> findByFanficId(Long id);
+    void deleteChaptersByFanficId(Long id);
+    void deleteChaptersById(Long id);
 }

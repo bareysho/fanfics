@@ -6,7 +6,14 @@ import java.util.List;
 
 public interface FanficService {
     Fanfic findById(Long id);
+
     List<Fanfic> findAll();
+
     List<Fanfic> findByUserId(Long id);
+
     void save(Fanfic fanfic);
+
+    void deleteByCreatorId(Long id);
+
+    void deleteByFanficId(Long id);
 }

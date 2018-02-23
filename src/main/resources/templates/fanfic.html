@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,8 +14,11 @@
 
     <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.css" rel="stylesheet">
     <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.js"></script>
-
+    <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
     <link href="/css/bootstrap-tagsinput.css" rel="stylesheet">
+    <link href="/css/like.css" rel="stylesheet">
+    <script src="/js/like-dislike.min.js"></script>
     <link type="text/css" rel="stylesheet" media="all" href='' id="theme_css"/>
 </head>
 
@@ -34,7 +37,7 @@
                         <div class="panel-body">
                             <div style="height: 250px;width:100%; background-color: rgba(245,245,245,0.92); overflow: hidden;position: relative">
                                 <img style="width: 100%;  margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0;"
-                                     th:src="${currentFanfic.getImage()}" alt="fanfic image"/>
+                                     th:src="${currentFanfic.image}" alt="fanfic image"/>
                             </div>
                         </div>
                     </div>
@@ -43,13 +46,22 @@
                 <div class="col-md-8">
                     <div class="panel panel-default">
                         <div class="panel-body">
-                            <h4 th:text="#{label.genre} + '&#58 ' + ${currentFanfic.genreId}"></h4>
+                            <p><h4 th:text="#{label.genre} + '&#58 '"></h4><span
+                                th:text="${currentFanfic.genresAsSting}"></span>
+                            </p>
                             <hr>
                             <h4 th:text="#{label.description} + '&#58'"></h4>
                             <p th:text="${currentFanfic.description}"></p>
                         </div>
                     </div>
-
+                    <p><a th:href="'/fanfics/' + ${currentFanfic.id} + '/edit'"
+                          th:if="${currentUser!=null and
+                          (currentUser.id == currentFanfic.creator.id or currentUser.hasRole('ADMIN'))}"
+                          class="btn btn-primary" th:text="#{button.edit}"></a>
+                        <a th:href="'/fanfics/' + ${currentFanfic.id} + '/delete'"
+                           th:if="${currentUser!=null and
+                           (currentUser.id == currentFanfic.creator.id or currentUser.hasRole('ADMIN'))}"
+                           class="btn btn-primary" th:text="#{button.delete}"></a></p>
                 </div>
             </div>
         </div>
@@ -67,13 +79,6 @@
                         </a>
                     </ul>
                 </div>
-
-                <form th:action="@{'/createChapter/'+ ${currentFanfic.id}}">
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary" id="js-upload-submit"
-                                th:text="#{label.addChapter}"></button>
-                    </div>
-                </form>
             </div>
         </div>
 
@@ -146,16 +151,40 @@
 
             </div>
 
+
         </form>
         <hr>
-        <div class="panel panel-default" th:each="comment : ${currentFanfic.comments}">
+        <div class="panel panel-default" th:each="comment, iter : ${currentFanfic.comments}">
             <div class="panel-heading">
                 <strong th:text="${comment.getUserCreator()}"></strong>
                 <span class="date" th:text="${comment.date}"></span>
+
+                <span th:id="'rating' + ${comment.id}">
+                    <i sec:authorize="!hasAuthority('USER')" class="far fa-heart"></i>
+                    <a class="like" sec:authorize="hasAuthority('USER')" th:onclick="'ajax_like('+${comment.id}+')'"
+                       th:if="${!comment.userWhoLiked.contains(currentUser)}"><i class="far fa-heart"></i></a>
+                    <a class="like" sec:authorize="hasAuthority('USER')" th:onclick="'ajax_like('+${comment.id}+')'"
+                       th:if="${comment.userWhoLiked.contains(currentUser)}"><i class="fas fa-heart"></i></a>
+
+                    <span class="likes" th:text="${comment.userWhoLiked.size()}"></span>
+                </span>
+
             </div>
+
+            <script type="text/javascript" th:inline="javascript">
+                function ajax_like(commentid) {
+                    $.ajax({
+                        url: '/comments/' + commentid + '/like',
+                        type: 'post',
+                        success: function (data) {
+                            $('#rating' + commentid).html(data);
+                        }
+                    });
+                }
+            </script>
+
             <div class="panel-body" th:inline="text">
                 [[${comment.text}]]
-                <!--<%= link_to "Delete comment", [comment.project, comment], method: :delete %>-->
             </div>
         </div>
     </div>
@@ -166,6 +195,7 @@
 </div>
 
 <script src="/js/change-theme.js"></script>
+
 
 </body>
 </html>

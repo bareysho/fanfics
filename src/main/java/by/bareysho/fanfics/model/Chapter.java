@@ -10,8 +10,7 @@ import javax.persistence.*;
 @Table(name = "chapters")
 @Getter
 @Setter
-public class Chapter
-{
+public class Chapter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -14,6 +14,8 @@ public interface UserService {
 
     CustomUser findByPassword(String password);
 
+    CustomUser findById(Long id);
+
     String encodePassword(String password);
 
     void banUserById(Long id);

@@ -1,9 +1,9 @@
 package by.bareysho.fanfics.service.impl;
 
-import by.bareysho.fanfics.repository.RoleRepository;
-import by.bareysho.fanfics.repository.UserRepository;
 import by.bareysho.fanfics.model.CustomUser;
 import by.bareysho.fanfics.model.Role;
+import by.bareysho.fanfics.repository.UserRepository;
+import by.bareysho.fanfics.service.RoleService;
 import by.bareysho.fanfics.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -23,16 +23,19 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private RoleRepository roleRepository;
+    private RoleService roleService;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public void save(CustomUser user) {
-        Set<Role> roles = new HashSet<>();
-        roles.add(roleRepository.getOne(1L));
-        user.setRoles(roles);
+        if (user.getRoles().size() == 0) {
+            Set<Role> roles = new HashSet<>();
+            roles.add(roleService.findByName("USER"));
+            user.setRoles(roles);
+        }
+
         userRepository.save(user);
     }
 
@@ -46,7 +49,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public CustomUser getLoginUser(){
+    public CustomUser getLoginUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String name = authentication.getName();
         return userRepository.findByUsername(name);
@@ -60,6 +63,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public CustomUser findByPassword(String password) {
         return userRepository.findByPassword(password);
+    }
+
+    @Override
+    public CustomUser findById(Long id) {
+        return userRepository.findById(id);
     }
 
     @Override

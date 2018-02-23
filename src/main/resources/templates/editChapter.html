@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Fanfic</title>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no">
+
+    <link href="http://fonts.googleapis.com/css?family=Roboto:400,300,700,900|Roboto+Condensed:400,300,700"
+          rel="stylesheet" type="text/css">
+
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+
+    <!-- include summernote css/js -->
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.js"></script>
+    <link type="text/css" rel="stylesheet" media="all" href='' id="theme_css"/>
+</head>
+
+<body>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+
+<div class="container">
+    <div class="row">
+        <div style="width: 60%; margin: 35px auto;">
+
+            <h2 th:text="#{button.editChapter}"></h2>
+            <hr>
+            <form th:action="@{'/fanfics/' + ${fanficId} + '/chapters/' + ${editChapter.id}}" th:object="${editChapter}"
+                  method="post">
+
+                <div class="form-group">
+                    <label for="chapterName"><h4 th:text="#{label.title}"></h4></label>
+                    <input type="text" th:field="*{chapterName}" class="form-control" id="chapterName"
+                           th:placeholder="#{label.title}"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="summernote"><h4 th:text="#{label.text}"></h4></label>
+                    <textarea rows="15" id="summernote" th:field="*{text}" name="editordata"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" id="js-upload-submit"
+                            th:text="#{label.addChapter}"></button>
+                    <a th:href="'/fanfics/' + ${fanficId} + '/edit'"
+                       class="btn btn-primary" th:text="#{button.cancel}"></a>
+                </div>
+            </form>
+
+
+            <script type="text/javascript" th:inline="javascript">
+                $(document).ready(function () {
+                    $('#summernote').summernote({
+                        placeholder: [[#{label.enterText}]],
+                        height: 400
+                    });
+                });
+            </script>
+        </div>
+    </div>
+</div>
+
+<div style="padding-bottom: 120px;" class="container">
+
+</div>
+
+<script src="/js/change-theme.js"></script>
+
+</body>
+</html>

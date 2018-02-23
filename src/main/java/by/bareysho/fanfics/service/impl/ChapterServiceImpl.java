@@ -33,4 +33,13 @@ public class ChapterServiceImpl implements ChapterService {
     public List<Chapter> findByFanficId(Long id) {
         return chapterRepository.findByOvnerFanfic_Id(id);
     }
+
+    @Override
+    public void deleteChaptersByFanficId(Long id) {
+        chapterRepository.removeChaptersByOvnerFanfic_Id(id);
+    }
+    @Override
+    public void deleteChaptersById(Long id) {
+        chapterRepository.removeChaptersById(id);
+    }
 }

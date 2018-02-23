@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 
 @Entity
@@ -17,7 +18,7 @@ import javax.validation.constraints.NotNull;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @NotNull
     @Length(min=1)
@@ -26,6 +27,9 @@ public class Comment {
 
     @Field
     private String date;
+
+    @ManyToMany(mappedBy = "likedComments", fetch = FetchType.LAZY)
+    private Set<CustomUser> userWhoLiked;
 
     private String userCreator;
 

@@ -7,4 +7,5 @@ import java.util.List;
 public interface CommentService {
     List<Comment> findByFanficId(Long id);
     void save(Comment comment);
+    Comment findById(Long id);
 }
