@@ -19,6 +19,8 @@
     <link href="/css/bootstrap-tagsinput.css" rel="stylesheet">
     <link href="/css/like.css" rel="stylesheet">
     <script src="/js/like-dislike.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.rating-2.0.js"></script>
+    <link href="/css/jquery.rating.css" rel="stylesheet" type="text/css"/>
     <link type="text/css" rel="stylesheet" media="all" href='' id="theme_css"/>
 </head>
 
@@ -92,11 +94,45 @@
 
                 <div th:each="chapter, iter : ${fanficChapters}" class="panel panel-default">
                     <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion"
-                               th:text="#{label.chapter} + ' ' + ${iter.index+1} + ' - ' + ${chapter.chapterName}"
-                               th:href="'#collapse' + ${chapter.id}"></a>
-                        </h4>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion"
+                                       th:text="#{label.chapter} + ' ' + ${iter.index+1} + ' - ' + ${chapter.chapterName}"
+                                       th:href="'#collapse' + ${chapter.id}"></a>
+                                </h4>
+                            </div>
+
+                            <div class="col-md-3 col-md-offset-6">
+                                <div class="rate">
+                                    <h4 th:text="'Средняя оценка ' + ${chapter.average()}"></h4>
+                                    <div class="stars">
+                                        <div sec:authorize="!isAuthenticated()">
+                                            <div class="rating2">
+                                                <input type="hidden" class="val" name="val"
+                                                       th:value="${chapter.average()}"/>
+                                            </div>
+                                        </div>
+                                        <div sec:authorize="isAuthenticated()">
+                                            <div th:if="${chapter.checkReated(currentUser)}" class="rating2">
+                                                <input type="hidden" class="val" name="val"
+                                                       th:value="${chapter.average()}"/>
+                                            </div>
+                                        </div>
+                                        <div sec:authorize="isAuthenticated()">
+                                            <div th:if="${!chapter.checkReated(currentUser)}" class="rating">
+                                                <input type="hidden" class="val" name="val"
+                                                       th:value="${chapter.average()}"/>
+                                                <input type="hidden" class="votes" name="votes"
+                                                       th:value="${chapter.ratings.size()}"/>
+                                                <input type="hidden" class="vote-id" name="vote-id"
+                                                       th:value="${chapter.id}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div th:id="'collapse' + ${chapter.id}" class="panel-collapse collapse">
                         <input type="hidden" th:id="'hiddenFieldText'+${chapter.id}" value=""
@@ -181,6 +217,7 @@
                         }
                     });
                 }
+
             </script>
 
             <div class="panel-body" th:inline="text">
@@ -193,6 +230,27 @@
 <div style="padding-bottom: 120px;" class="container">
 
 </div>
+
+<script type="text/javascript">
+    $('div.rating').rating({
+        fx: 'full',
+        image: '/images/stars.png',
+        loader: '/images/ajax-loader.gif',
+        url: '/rating',
+        callback: function (responce) {
+
+            this.vote_success.fadeOut(2000);
+        }
+    });
+
+    $('div.rating2').rating({
+        fx: 'float',
+        image: '/images/stars.png',
+        loader: '/images/ajax-loader.gif',
+        readOnly: true
+    });
+
+</script>
 
 <script src="/js/change-theme.js"></script>
 

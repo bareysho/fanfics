@@ -3,6 +3,7 @@ package by.bareysho.fanfics.controller;
 import by.bareysho.fanfics.model.*;
 import by.bareysho.fanfics.repository.search.FulltextRepository;
 import by.bareysho.fanfics.service.*;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -44,6 +45,9 @@ public class FanficController {
 
     @Autowired
     private FulltextRepository fulltextRepository;
+
+    @Autowired
+    private RatingService ratingService;
 
     @RequestMapping(value = "/createFanfic", method = RequestMethod.GET)
     public String createFanfic(Model model) {
@@ -336,6 +340,38 @@ public class FanficController {
     public String fullTextSearch(Model model, String q) {
         model.addAttribute("fanficsList", fulltextRepository.search(q));
         return "search";
+    }
+
+    @ResponseBody
+    @PostMapping(value = "/rating")
+    public String rating(@RequestParam("vote-id") Long chapterId, @RequestParam("score") int score){
+
+        System.out.println(chapterId);
+        System.out.println(score);
+
+        Chapter chapter = chapterService.findById(chapterId);
+        CustomUser customUser = userService.getLoginUser();
+
+        ChapterRating chapterRating = new ChapterRating();
+
+        if (chapter.checkReated(customUser)){
+            chapterRating = ratingService.findByUserAndChapterId(customUser.getId(), chapterId);
+            chapterRating.setAmount(score);
+        } else {
+            chapterRating.setUser(customUser);
+            chapterRating.setChapter(chapter);
+            chapterRating.setAmount(score);
+        }
+
+        ratingService.save(chapterRating);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("msg", "\u0421\u043f\u0430\u0441\u0438\u0431\u043e. \u0412\u0430\u0448 \u0433\u043e\u043b\u043e\u0441 \u0443\u0447\u0442\u0435\u043d");
+        jsonObject.put("status", "OK");
+
+        String jsonString = jsonObject.toJSONString();
+
+        return jsonString;
     }
 
 }

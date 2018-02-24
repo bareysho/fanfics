@@ -2,3 +2,22 @@
     color: rgb(255, 30, 0);
     font-size: 1em;
 }
+.stars{
+    display: inline-block;
+}
+/*.chapter-head {*/
+
+/*}*/
+.average-rate{
+    font-size: 24px;
+    height: 32px;
+    display: inline-block;
+
+}
+.rate{
+
+}
+
+/*.panel-heading{*/
+    /*height: 60px;*/
+/*}*/
