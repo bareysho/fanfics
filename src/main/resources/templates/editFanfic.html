@@ -6,8 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Fanfic</title>
-
+    <title th:title="#{button.edit}"></title>
 
     <link rel="stylesheet" type="text/css"
           href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
@@ -89,7 +88,7 @@
                             <input type="submit" class="btn btn-primary"
                                    onclick="document.forms['form'].submit();" th:value="#{button.save}">
                             </input>
-                            <a style="color: white" th:href="'/readFanfic/' + ${currentFanfic.id}"
+                            <a style="color: white" th:href="'/fanfics/' + ${currentFanfic.id} + '/read'"
                                class="btn btn-primary"
                                th:text="#{button.cancel}"></a>
                             <a style="margin-left: 30px;" th:href="'/fanfics/' + ${currentFanfic.id} + '/page_edit/delete'"
@@ -180,7 +179,7 @@
             <input type="submit" class="btn btn-primary"
                    onclick="document.forms['form'].submit();" th:value="#{button.save}">
             </input>
-            <a style="color: white" th:href="'/readFanfic/' + ${currentFanfic.id}"
+            <a style="color: white" th:href="'/fanfics/' + ${currentFanfic.id} + '/read'"
                class="btn btn-primary"
                th:text="#{button.cancel}"></a>
             <a style="margin-left: 30px;" th:href="'/fanfics/' + ${currentFanfic.id} + '/page_edit/delete'"
@@ -196,15 +195,6 @@
 
 </div>
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#example-getting-started').multiselect({
-            nonSelectedText: 'Не выбрано',
-            allSelectedText: 'Выбрано все'
-        });
-    });
-</script>
-
 <script type="text/javascript" th:inline="javascript">
     $(function () {
         var sampleTags = [[${allTags}]];
@@ -218,7 +208,14 @@
     });
 </script>
 
-<script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#example-getting-started').multiselect({
+            nonSelectedText: 'Не выбрано',
+            allSelectedText: 'Выбрано все'
+        });
+    });
+
     $(document).ready(function () {
         // Basic
         $('.dropify').dropify();

@@ -44,16 +44,6 @@ public class UserController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Autowired
-    private GenreService genreService;
-
-//    @RequestMapping(value = "/registration", method = RequestMethod.GET)
-//    public String registration(Model model) {
-//        model.addAttribute("userForm", new CustomUser());
-//
-//        return "registration";
-//    }
-
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public String profile(Model model) {
         CustomUser dbCustomUser = securityService.getCurrentUser();
@@ -71,29 +61,6 @@ public class UserController {
         return "profile";
     }
 
-//    @RequestMapping(value = "/registration", method = RequestMethod.POST)
-//    public String registration(@ModelAttribute("userForm") CustomUser userForm, BindingResult bindingResult, Model model, WebRequest request) {
-//        userValidator.validate(userForm, bindingResult);
-//        if (bindingResult.hasErrors()) {
-//            return "registration";
-//        }
-//        userForm.setPassword(userService.encodePassword(userForm.getPassword()));
-//        userService.save(userForm);
-//
-//        securityService.autoLogin(userForm.getUsername(), userForm.getConfirmPassword());
-//
-//        try {
-//            eventPublisher.publishEvent(new OnRegistrationCompleteEvent
-//                    (userForm, request.getLocale(), request.getContextPath()));
-//        } catch (Exception me) {
-//            me.printStackTrace();
-//            return "emailError";
-//        }
-//        model.addAttribute("username", userForm.getUsername());
-//        return "regSuccess";
-//    }
-
-
     @RequestMapping(value = {"/", "welcome"}, method = RequestMethod.GET)
     public String welcome(Model model) {
         List<Fanfic> fanfics = fanficService.findAll();
@@ -105,7 +72,6 @@ public class UserController {
         return "welcome";
     }
 
-
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
     public String admin(Model model) {
 
@@ -114,20 +80,6 @@ public class UserController {
 
         return "admin";
     }
-
-//    @RequestMapping(value = "/sendEmailConfirmation", method = RequestMethod.POST)
-//    public String emailConfirmation(WebRequest request) {
-//
-//        CustomUser dbCustomUser = securityService.getCurrentUser();
-//
-//        try {
-//            eventPublisher.publishEvent(new OnRegistrationCompleteEvent
-//                    (dbCustomUser, request.getLocale(), request.getContextPath()));
-//        } catch (Exception me) {
-//            me.printStackTrace();
-//        }
-//        return "redirect:";
-//    }
 
     @RequestMapping(value = {"/users/{userid}"}, method = RequestMethod.POST)
     public String updateFanfic(Model model, CustomUser user, @RequestPart(value = "files", required = false) MultipartFile file,
@@ -172,8 +124,6 @@ public class UserController {
             }
         } else if (action.equals("delete")) {
             for (int i = 0; i < token.length; i++) {
-                System.out.println(token[i]);
-//                fanficService.deleteByCreatorId(token[i]);
                 userService.deleteUserById(token[i]);
             }
         }

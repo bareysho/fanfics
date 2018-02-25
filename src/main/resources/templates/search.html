@@ -5,21 +5,14 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Title</title>
+    <title th:title="#{button.search}"></title>
 
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
 
-    <link href="/css/dropify.min.css" rel="stylesheet">
-
 
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
-
-
-    <link href="/css/card.css" rel="stylesheet">
-
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
     <script type="text/javascript"
-
             src="http://demos.creative-tim.com/fresh-bootstrap-table/assets/js/bootstrap-table.js"></script>
 
     <link rel="stylesheet"
@@ -44,22 +37,18 @@
 
             <div class="fresh-table">
 
-                <!-- Изменение фона таблицы: full-color-blue, full-color-azure, full-color-green, full-color-red, full-color-orange
-                Изменение фона тулбара страницы: toolbar-color-blue, toolbar-color-azure, toolbar-color-green, toolbar-color-red, toolbar-color-orange
-                -->
-
                 <div class="toolbar">
-                    <a href="/createFanfic" id="alertBtn" class="btn btn-default" th:text="#{label.addFanfic}"></a>
+                    <a href="/fanfics/create" id="alertBtn" class="btn btn-default" th:text="#{label.addFanfic}"></a>
                 </div>
 
 
                 <table id="fresh-table" class="table">
                     <thead>
                     <th data-field="id">ID</th>
-                    <th data-field="name" data-sortable="true">Name</th>
-                    <th data-field="chaptersCount" data-sortable="true">Chapters count</th>
+                    <th data-field="name" data-sortable="true" th:text="#{label.firstname}"></th>
+                    <th data-field="chaptersCount" data-sortable="true" th:text="#{label.chaptersCount}"></th>
                     <th data-field="actions" data-formatter="operateFormatter"
-                        data-events="operateEvents">Actions
+                        data-events="operateEvents" th:text="#{label.actions}">Actions
                     </th>
                     </thead>
                     <tbody id="trable">
@@ -67,7 +56,7 @@
 
                     <tr th:each="fanfic : ${fanficsList}">
                         <td th:text="${fanfic.id}"></td>
-                        <td><a th:text="${fanfic.fanficName}" th:href="'/readFanfic/' + ${fanfic.id}"></a></td>
+                        <td><a th:text="${fanfic.fanficName}" th:href="'/fanfics/' + ${fanfic.id} + '/read'"></a></td>
                         <td th:text="${fanfic.chapters.size()}"></td>
                         <td></td>
                     </tr>
@@ -154,79 +143,75 @@
                         '<i class="fa fa-remove"></i>',
                     ].join('');
                 }
+
+                $(document).ready(function () {
+                    // Basic
+                    $('.dropify').dropify();
+                    // Translated
+                    $('.dropify-fr').dropify({
+                        messages: {
+                            default: 'Glissez-déposez un fichier ici ou cliquez',
+                            replace: 'Glissez-déposez un fichier ou cliquez pour remplacer',
+                            remove: 'Supprimer',
+                            error: 'Désolé, le fichier trop volumineux'
+                        }
+                    });
+                    // Used events
+                    var drEvent = $('#input-file-events').dropify();
+                    drEvent.on('dropify.beforeClear', function (event, element) {
+                        return confirm("Do you really want to delete \"" + element.file.name + "\" ?");
+                    });
+                    drEvent.on('dropify.afterClear', function (event, element) {
+                        alert('File deleted');
+                    });
+                    drEvent.on('dropify.errors', function (event, element) {
+                        console.log('Has Errors');
+                    });
+                    var drDestroy = $('#input-file-to-destroy').dropify();
+                    drDestroy = drDestroy.data('dropify')
+                    $('#toggleDropify').on('click', function (e) {
+                        e.preventDefault();
+                        if (drDestroy.isDropified()) {
+                            drDestroy.destroy();
+                        } else {
+                            drDestroy.init();
+                        }
+                    })
+                });
+
+                (function ($) {
+                    var truncate = function (el) {
+                        var text = el.text(),
+                            height = el.height(),
+                            clone = el.clone();
+
+                        clone.css({
+                            position: 'absolute',
+                            visibility: 'hidden',
+                            height: 'auto'
+                        });
+                        el.after(clone);
+
+                        var l = text.length - 1;
+                        for (; l >= 0 && clone.height() > height; --l) {
+                            clone.text(text.substring(0, l) + '...');
+                        }
+
+                        el.text(clone.text());
+                        clone.remove();
+                    };
+
+                    $.fn.truncateText = function () {
+                        return this.each(function () {
+                            truncate($(this));
+                        });
+                    };
+                }(jQuery));
             </script>
         </div>
 
     </div>
 </div>
-
-<script>
-    (function ($) {
-        var truncate = function (el) {
-            var text = el.text(),
-                height = el.height(),
-                clone = el.clone();
-
-            clone.css({
-                position: 'absolute',
-                visibility: 'hidden',
-                height: 'auto'
-            });
-            el.after(clone);
-
-            var l = text.length - 1;
-            for (; l >= 0 && clone.height() > height; --l) {
-                clone.text(text.substring(0, l) + '...');
-            }
-
-            el.text(clone.text());
-            clone.remove();
-        };
-
-        $.fn.truncateText = function () {
-            return this.each(function () {
-                truncate($(this));
-            });
-        };
-    }(jQuery));
-</script>
-
-<script>
-    $(document).ready(function () {
-        // Basic
-        $('.dropify').dropify();
-        // Translated
-        $('.dropify-fr').dropify({
-            messages: {
-                default: 'Glissez-déposez un fichier ici ou cliquez',
-                replace: 'Glissez-déposez un fichier ou cliquez pour remplacer',
-                remove: 'Supprimer',
-                error: 'Désolé, le fichier trop volumineux'
-            }
-        });
-        // Used events
-        var drEvent = $('#input-file-events').dropify();
-        drEvent.on('dropify.beforeClear', function (event, element) {
-            return confirm("Do you really want to delete \"" + element.file.name + "\" ?");
-        });
-        drEvent.on('dropify.afterClear', function (event, element) {
-            alert('File deleted');
-        });
-        drEvent.on('dropify.errors', function (event, element) {
-            console.log('Has Errors');
-        });
-        var drDestroy = $('#input-file-to-destroy').dropify();
-        drDestroy = drDestroy.data('dropify')
-        $('#toggleDropify').on('click', function (e) {
-            e.preventDefault();
-            if (drDestroy.isDropified()) {
-                drDestroy.destroy();
-            } else {
-                drDestroy.init();
-            }
-        })
-    });
-</script>
 
 <script src="/js/dropify.min.js"></script>
 <script src="/js/change-theme.js"></script>

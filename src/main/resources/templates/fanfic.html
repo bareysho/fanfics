@@ -10,6 +10,7 @@
 
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
 
     <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.css" rel="stylesheet">
@@ -22,13 +23,17 @@
     <script type="text/javascript" src="/js/jquery.rating-2.0.js"></script>
     <link href="/css/jquery.rating.css" rel="stylesheet" type="text/css"/>
     <link type="text/css" rel="stylesheet" media="all" href='' id="theme_css"/>
+    <link type="text/css" rel="stylesheet" media="all" href='/css/normal-mode.css' id="mode_css"/>
 </head>
 
 <body>
 <div th:replace="fragments/header :: header">&nbsp;</div>
 
 <div class="container">
-    <div class="row">
+
+
+
+    <div class="row prewiew">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 th:text="${currentFanfic.fanficName}"></h3>
@@ -56,10 +61,11 @@
                             <p th:text="${currentFanfic.description}"></p>
                         </div>
                     </div>
-                    <p><a th:href="'/fanfics/' + ${currentFanfic.id} + '/edit'"
-                          th:if="${currentUser!=null and
+                    <p>
+                        <a th:href="'/fanfics/' + ${currentFanfic.id} + '/edit'"
+                           th:if="${currentUser!=null and
                           (currentUser.id == currentFanfic.creator.id or currentUser.hasRole('ADMIN'))}"
-                          class="btn btn-primary" th:text="#{button.edit}"></a>
+                           class="btn btn-primary" th:text="#{button.edit}"></a>
                         <a th:href="'/fanfics/' + ${currentFanfic.id} + '/delete'"
                            th:if="${currentUser!=null and
                            (currentUser.id == currentFanfic.creator.id or currentUser.hasRole('ADMIN'))}"
@@ -70,7 +76,7 @@
 
     </div>
 
-    <div class="row">
+    <div class="row chapterlist">
         <div class="panel panel-default">
             <div class="panel-body">
                 <div class="fanficContent">
@@ -85,10 +91,8 @@
         </div>
 
     </div>
-</div>
 
-<div class="container">
-    <div class="row">
+    <div class="row content">
         <div class="col-md-12">
             <div class="panel-group" id="accordion">
 
@@ -103,26 +107,26 @@
                                 </h4>
                             </div>
 
-                            <div class="col-md-3 col-md-offset-6">
+                            <div class="col-md-3 col-md-offset-6 stars-rating">
                                 <div class="rate">
-                                    <h4 th:text="'Средняя оценка ' + ${chapter.average()}"></h4>
+                                    <h4 th:text="'Средняя оценка ' + ${chapter.calculateAverage()}"></h4>
                                     <div class="stars">
                                         <div sec:authorize="!isAuthenticated()">
                                             <div class="rating2">
                                                 <input type="hidden" class="val" name="val"
-                                                       th:value="${chapter.average()}"/>
+                                                       th:value="${chapter.calculateAverage()}"/>
                                             </div>
                                         </div>
                                         <div sec:authorize="isAuthenticated()">
                                             <div th:if="${chapter.checkReated(currentUser)}" class="rating2">
                                                 <input type="hidden" class="val" name="val"
-                                                       th:value="${chapter.average()}"/>
+                                                       th:value="${chapter.calculateAverage()}"/>
                                             </div>
                                         </div>
                                         <div sec:authorize="isAuthenticated()">
                                             <div th:if="${!chapter.checkReated(currentUser)}" class="rating">
                                                 <input type="hidden" class="val" name="val"
-                                                       th:value="${chapter.average()}"/>
+                                                       th:value="${chapter.calculateAverage()}"/>
                                                 <input type="hidden" class="votes" name="votes"
                                                        th:value="${chapter.ratings.size()}"/>
                                                 <input type="hidden" class="vote-id" name="vote-id"
@@ -134,6 +138,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div th:id="'collapse' + ${chapter.id}" class="panel-collapse collapse">
                         <input type="hidden" th:id="'hiddenFieldText'+${chapter.id}" value=""
                                th:attr="value=${chapter.text}">
@@ -152,12 +157,8 @@
             </div>
         </div>
     </div>
-</div>
 
-<div class="container">
-    <div class="row">
-
-
+    <div class="row tags">
         <div class="panel panel-default">
             <div class="panel-body">
                 <span th:each="tag : ${currentFanfic.tags}" class="tag label label-info"
@@ -166,10 +167,8 @@
         </div>
 
     </div>
-</div>
 
-<div class="container">
-    <div class="row">
+    <div class="row send-comments">
         <form action="#" th:action="@{'/fanfics/' + ${currentFanfic.id} + '/comment/'}" th:object="${comment}"
               method="post">
             <div class="panel panel-default">
@@ -186,16 +185,18 @@
                 </div>
 
             </div>
-
-
         </form>
         <hr>
+    </div>
+
+    <div class="comments">
+
         <div class="panel panel-default" th:each="comment, iter : ${currentFanfic.comments}">
             <div class="panel-heading">
                 <strong th:text="${comment.getUserCreator()}"></strong>
                 <span class="date" th:text="${comment.date}"></span>
 
-                <span th:id="'rating' + ${comment.id}">
+                <span th:id="'comment' + ${comment.id}">
                     <i sec:authorize="!hasAuthority('USER')" class="far fa-heart"></i>
                     <a class="like" sec:authorize="hasAuthority('USER')" th:onclick="'ajax_like('+${comment.id}+')'"
                        th:if="${!comment.userWhoLiked.contains(currentUser)}"><i class="far fa-heart"></i></a>
@@ -213,7 +214,7 @@
                         url: '/comments/' + commentid + '/like',
                         type: 'post',
                         success: function (data) {
-                            $('#rating' + commentid).html(data);
+                            $('#comment' + commentid).html(data);
                         }
                     });
                 }
@@ -227,11 +228,26 @@
     </div>
 </div>
 
-<div style="padding-bottom: 120px;" class="container">
-
+<div class="progress">
+    <div class="progress-bar" role="progressbar" aria-valuenow="70"
+         aria-valuemin="0" aria-valuemax="100">
+    </div>
 </div>
+<a href="" id="reader-mode-btn" class="btn btn-primary" th:text="#{button.readMode}"></a>
 
 <script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        $(window).scroll(function () {
+            var s = $(window).scrollTop();
+            var f = $(document).height() - $(window).height();
+
+            var d = s / f * 100;
+            var p = Math.round(d);
+
+            document.getElementsByClassName('progress-bar')[0].style.width = p + "%";
+        });
+    })
+
     $('div.rating').rating({
         fx: 'full',
         image: '/images/stars.png',
@@ -252,8 +268,9 @@
 
 </script>
 
-<script src="/js/change-theme.js"></script>
 
+<script src="/js/change-theme.js"></script>
+<script src="/js/reader-mode.js"></script>
 
 </body>
 </html>

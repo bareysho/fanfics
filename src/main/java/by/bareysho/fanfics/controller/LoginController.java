@@ -24,12 +24,6 @@ public class LoginController {
     @Autowired
     private UloginAuthenticationFilter uloginAuthProvider;
 
-    @Autowired
-    private RoleService roleService;
-
-    @Autowired
-    private UserService userService;
-
     @RequestMapping(value={"/login"}, method = RequestMethod.GET)
     public ModelAndView login(){
         ModelAndView modelAndView = new ModelAndView();

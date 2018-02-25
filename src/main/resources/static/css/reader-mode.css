@@ -1,0 +1,48 @@
+.prewiew {
+    display: none;
+}
+
+.chapterlist {
+    display: none;
+}
+
+.tags {
+    display: none;
+}
+
+.comments {
+    display: none;
+}
+
+.send-comments {
+    display: none;
+}
+
+.stars-rating {
+    display: none;
+}
+
+body {
+    position: relative;
+}
+
+div.progress {
+    position: fixed;
+    left: 3%;
+    width: 94%;
+    bottom: 0;
+}
+
+#reader-mode-btn {
+    position: fixed;
+    left: 3%;
+    width: 120px;
+    bottom: 50px;
+}
+
+.content {
+    position: absolute;
+    margin-bottom: 70px;
+    left: 3%;
+    width: 96%;
+}

@@ -23,7 +23,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/css/*", "/js/*", "/images/*").permitAll()
-                .antMatchers("/","/welcome","/register", "/login", "/ulogin", "/readFanfic/**").permitAll()
+                .antMatchers("/","/welcome","/register", "/login", "/ulogin", "/fanfics/*/read", "/fanfics/search/**").permitAll()
                 .anyRequest().authenticated()
                 .antMatchers("/admin").access("hasAuthority('ADMIN')")
                 .and()

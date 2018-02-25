@@ -1,0 +1,14 @@
+#reader-mode-btn {
+    position: fixed;
+    width: 5%;
+    left: 90%;
+    bottom: 20px;
+}
+
+div.progress {
+    visibility: hidden;
+    position: fixed;
+    width: 83%;
+    left: 5%;
+    bottom: 0px;
+}

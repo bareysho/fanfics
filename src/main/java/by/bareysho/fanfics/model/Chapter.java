@@ -41,7 +41,7 @@ public class Chapter {
         return check;
     }
 
-    public double average(){
+    public double calculateAverage(){
         double all = 0;
         if (ratings.size() == 0){
             return 0;
@@ -55,5 +55,4 @@ public class Chapter {
 
         return all/ratings.size();
     }
-
 }

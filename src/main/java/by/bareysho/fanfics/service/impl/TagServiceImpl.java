@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -44,5 +46,20 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag findByName(String name) {
         return tagRepository.findByTagName(name);
+    }
+
+    @Override
+    public Set<Tag> getTegsFromString(String addedTags){
+        Set<Tag> tags = new HashSet<>();
+        String[] strTags = addedTags.split(",");
+        for (int i = 0; i < strTags.length; i++) {
+            Tag tag = tagRepository.findByTagName(strTags[i]);
+            if (tag == null) {
+                tag = new Tag();
+                tag.setTagName(strTags[i]);
+            }
+            tags.add(tag);
+        }
+        return  tags;
     }
 }
