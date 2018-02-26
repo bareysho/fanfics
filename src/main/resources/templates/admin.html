@@ -39,6 +39,9 @@
                     <button type="submit" th:text="#{button.delete}" form="tableForm" class="btn btn-secondary" name="action" value="delete"
                             disabled>
                     </button>
+                    <button type="submit" th:text="#{button.setAdmin}" form="tableForm" class="btn btn-secondary" name="action" value="setAdmin"
+                            disabled>
+                    </button>
                 </div>
             </div>
 
@@ -50,6 +53,9 @@
                 <th th:text="#{button.username}"></th>
                 <th>Email</th>
                 <th th:text="#{label.status}"></th>
+                <th th:text="#{label.emailConf}"></th>
+                <th th:text="#{label.roles}"></th>
+
 
                 </thead>
                 <tbody>
@@ -58,8 +64,9 @@
                         <td><input type="checkbox" type='checkbox' name="checkthis" th:value="${user.id}"/></td>
                         <td th:text="${user.username}"></td>
                         <td th:text="${user.email}"></td>
-                        <td th:text="${user.banned} ? #{label.banned}: #{label.active}" >
-                        </td>
+                        <td th:text="${user.banned} ? #{label.banned}: #{label.active}" ></td>
+                        <td th:text="${user.enabled} ? #{label.confirmed}: #{label.unconf}" ></td>
+                        <td th:text="${user.getRolesAsString()}"></td>
                         <input type="checkbox" hidden name="isBaned" th:checked="${user.banned}"/>
                     </tr>
                 </form>

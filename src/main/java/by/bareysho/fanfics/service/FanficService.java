@@ -16,4 +16,12 @@ public interface FanficService {
     void deleteByCreatorId(Long id);
 
     void deleteByFanficId(Long id);
+
+    double calculateFanficAverage(Fanfic fanfic);
+
+    List<Fanfic> findTop10OrderByAverageRate();
+
+    List<Fanfic> findTop10ByOrderByCreationDateDesc();
+
+    String generateDeleteResponse();
 }

@@ -51,6 +51,9 @@ public class TagServiceImpl implements TagService {
     @Override
     public Set<Tag> getTegsFromString(String addedTags){
         Set<Tag> tags = new HashSet<>();
+        if (addedTags ==null || addedTags.length() == 0){
+            return tags;
+        }
         String[] strTags = addedTags.split(",");
         for (int i = 0; i < strTags.length; i++) {
             Tag tag = tagRepository.findByTagName(strTags[i]);

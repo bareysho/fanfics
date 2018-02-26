@@ -15,10 +15,13 @@ public interface FanficRepository extends JpaRepository<Fanfic, Long> {
     @Transactional
     @Modifying
     @Query(value="DELETE FROM fanfics WHERE creator_id = :c_id", nativeQuery = true)
-    public void deleteFanficsByCreator_Id(@Param("c_id") Long creator_id);
+    void deleteFanficsByCreator_Id(@Param("c_id") Long creator_id);
 
     @Transactional
     @Modifying
     @Query(value="DELETE FROM fanfics WHERE id = :id", nativeQuery = true)
-    public void removeFanficById(@Param("id") Long id);
+    void removeFanficById(@Param("id") Long id);
+
+    List<Fanfic> findTop10ByOrderByAverageRateDesc();
+    List<Fanfic> findTop10ByOrderByCreationDateDesc();
 }

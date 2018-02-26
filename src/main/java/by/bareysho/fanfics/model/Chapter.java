@@ -44,15 +44,12 @@ public class Chapter {
     public double calculateAverage(){
         double all = 0;
         if (ratings.size() == 0){
+            System.out.println("ne vidit");
             return 0;
         }
         for (ChapterRating chapterRating : ratings){
             all += chapterRating.getAmount();
         }
-        System.out.println(all);
-        System.out.println(ratings.size());
-        System.out.println(all/ratings.size());
-
         return all/ratings.size();
     }
 }

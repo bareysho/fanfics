@@ -43,11 +43,11 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-
                     <input id="fanficname" name="textinput" th:placeholder="#{button.username}"
                            class="form-control input-md" th:field="*{fanficName}" value=""
                            th:attr="value=${currentFanfic.fanficName}"
                            required="" type="text"/>
+                    <p><span class="error" th:if="${#fields.hasErrors('fanficName')}" th:errors="*{fanficName}"></span>
                 </div>
                 <div class="panel-body">
                     <div class="col-md-4">
@@ -66,7 +66,7 @@
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 <h4 th:text="#{label.genre} + '&#58 '"></h4>
-
+                                <p><span class="error" th:if="${#fields.hasErrors('genres')}" th:errors="*{genres}"></span></p>
                                 <select class="form-control" name="selectedGenres" id="example-getting-started"
                                         multiple="multiple">
                                     <option th:selected="${currentFanfic.genres.contains(genre)}"

@@ -32,7 +32,6 @@
 <div class="container">
 
 
-
     <div class="row prewiew">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -82,7 +81,7 @@
                 <div class="fanficContent">
                     <h2 th:text="#{label.content} +'&#58'"></h2>
                     <ul th:each="chapter,iter : ${fanficChapters}">
-                        <a href="#">
+                        <a th:class="'acollapse' + ${chapter.id}" th:href="'#col'+ ${chapter.id}">
                             <li th:text="#{label.chapter} + ' ' + ${iter.index+1} + ' - ' + ${chapter.chapterName}"></li>
                         </a>
                     </ul>
@@ -97,11 +96,12 @@
             <div class="panel-group" id="accordion">
 
                 <div th:each="chapter, iter : ${fanficChapters}" class="panel panel-default">
-                    <div class="panel-heading">
+                    <div class="panel-heading" th:id="'col' + ${chapter.id}">
                         <div class="row">
                             <div class="col-md-3">
                                 <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordion"
+                                    <a data-toggle="collapse"
+                                       data-parent="#accordion" th:name="'#collapse' + ${chapter.id}"
                                        th:text="#{label.chapter} + ' ' + ${iter.index+1} + ' - ' + ${chapter.chapterName}"
                                        th:href="'#collapse' + ${chapter.id}"></a>
                                 </h4>

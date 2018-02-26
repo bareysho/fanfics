@@ -25,6 +25,10 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public String uploadPhoto(byte[] photoBytes) throws IOException {
+        System.out.println(photoBytes.length);
+        if (photoBytes.length == 0){
+            return "http://torontopubliclibrary.typepad.com/.a/6a00e5509ea6a1883401b8d0e1b731970c-pi";
+        }
         Map<String, String> map = null;
         try{
             File file = new File("img");
@@ -36,6 +40,8 @@ public class ImageServiceImpl implements ImageService {
 
         }catch (IOException ex){
             ex.printStackTrace();
+        } catch (NullPointerException ex){
+            return "Somthing wrong";
         }
         return map.get("url");
     }

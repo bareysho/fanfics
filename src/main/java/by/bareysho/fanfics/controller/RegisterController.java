@@ -3,6 +3,7 @@ package by.bareysho.fanfics.controller;
 import by.bareysho.fanfics.model.CustomUser;
 import by.bareysho.fanfics.service.UserService;
 import by.bareysho.fanfics.service.impl.EmailServiceImpl;
+import by.bareysho.fanfics.validator.UserValidator;
 import com.nulabinc.zxcvbn.Strength;
 import com.nulabinc.zxcvbn.Zxcvbn;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.persistence.NonUniqueResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Map;
@@ -33,6 +35,9 @@ public class RegisterController {
     @Autowired
     private EmailServiceImpl emailServiceImpl;
 
+    @Autowired
+    private UserValidator userValidator;
+
     @RequestMapping(value = "/register", method = RequestMethod.GET)
     public ModelAndView showRegistrationPage(ModelAndView modelAndView, CustomUser user) {
         modelAndView.addObject("customUser", user);
@@ -44,9 +49,16 @@ public class RegisterController {
     public ModelAndView processRegistrationForm(ModelAndView modelAndView, @Valid CustomUser user,
                                                 BindingResult bindingResult,
                                                 HttpServletRequest request) {
-        CustomUser userExists = userService.findByEmail(user.getEmail());
-        if (userExists != null) {
-            setUserInvalid(modelAndView, bindingResult);
+        CustomUser usernameExists = userService.findByUsername(user.getUsername());
+        CustomUser userEmailExists = userService.findByEmail(user.getEmail());
+
+        if (userEmailExists != null) {
+            System.out.println("email");
+            setEmailInvalid(modelAndView, bindingResult);
+        }
+        if(usernameExists != null){
+            System.out.println("username");
+            setUsernameInvalid(modelAndView, bindingResult);
         }
         if (bindingResult.hasErrors()) {
             modelAndView.setViewName("register");
@@ -105,10 +117,24 @@ public class RegisterController {
         return modelAndView;
     }
 
-    private void setUserInvalid(ModelAndView modelAndView, BindingResult bindingResult){
+    private void setEmailInvalid(ModelAndView modelAndView, BindingResult bindingResult){
         modelAndView.addObject("alreadyRegisteredMessage",
-                "Oops!  There is already a user registered with the email provided.");
+                "Email registred");
         modelAndView.setViewName("register");
         bindingResult.reject("email");
     }
+    private void setUsernameInvalid(ModelAndView modelAndView, BindingResult bindingResult){
+        modelAndView.addObject("alreadyRegisteredMessage",
+                "Username registred");
+        modelAndView.setViewName("register");
+        bindingResult.reject("username");
+    }
+
+    private void setUsernameAndEmailInvalid(ModelAndView modelAndView, BindingResult bindingResult){
+        modelAndView.addObject("alreadyRegisteredMessage",
+                "Email and username registred");
+        modelAndView.setViewName("register");
+        bindingResult.reject("emailusername");
+    }
+
 }

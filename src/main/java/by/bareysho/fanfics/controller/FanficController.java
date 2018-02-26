@@ -3,6 +3,8 @@ package by.bareysho.fanfics.controller;
 import by.bareysho.fanfics.model.*;
 import by.bareysho.fanfics.repository.search.FulltextRepository;
 import by.bareysho.fanfics.service.*;
+import by.bareysho.fanfics.validator.FanficValidator;
+import by.bareysho.fanfics.validator.UserValidator;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,13 +12,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.sql.Date;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller
 public class FanficController {
@@ -48,26 +49,48 @@ public class FanficController {
     @Autowired
     private RatingService ratingService;
 
+    @Autowired
+    private FanficValidator fanficValidator;
+
     @RequestMapping(value = "/fanfics/create", method = RequestMethod.GET)
     public String createFanfic(Model model) {
         model.addAttribute("fanficForm", new Fanfic());
         model.addAttribute("allTags", tagService.findAllAsString());
         model.addAttribute("allGenres", genreService.findAll());
 
-        return "addFanfic";
+        return "addNewFanfic";
+    }
+
+    @RequestMapping(value = {"/addFanfic"}, method = RequestMethod.GET)
+    public String changeLocale(Model model, @ModelAttribute("fanficForm") Fanfic fanfic) {
+        model.addAttribute("allTags", tagService.findAllAsString());
+        model.addAttribute("allGenres", genreService.findAll());
+
+        return "addNewFanfic";
     }
 
     @RequestMapping(value = {"/addFanfic"}, method = RequestMethod.POST)
-    public String addProject(@ModelAttribute("fanficForm") Fanfic fanfic,
+    public String addProject(Model model, @ModelAttribute("fanficForm") Fanfic fanfic,
                              @RequestPart("files") MultipartFile file,
                              @RequestParam("stringtags") String addedTags,
-                             @RequestParam("selectedGenres") String selectedGenres,
+                             @RequestParam(value = "selectedGenres", required = false) String selectedGenres,
                              BindingResult bindingResult) throws Exception {
+
+        fanficValidator.validate(fanfic, bindingResult);
+        fanficValidator.fanficGenresValidate(selectedGenres, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("allTags", tagService.findAllAsString());
+            model.addAttribute("allGenres", genreService.findAll());
+            return "addNewFanfic";
+        }
 
         Set<Tag> tags = tagService.getTegsFromString(addedTags);
         Set<Genre> genres = genreService.getGenresFromString(selectedGenres);
         CustomUser user = userService.getLoginUser();
 
+        java.sql.Date date = new Date(System.currentTimeMillis());
+        fanfic.setCreationDate(date);
         fanfic.setGenres(genres);
         fanfic.setImage(imageService.uploadPhoto(file.getBytes()));
         fanfic.setCreator(user);
@@ -75,23 +98,33 @@ public class FanficController {
 
         fanficService.save(fanfic);
 
-        return "redirect:/fanfics/" + fanfic.getId() + "/edit";
+        return "redirect:/fanfics/" + fanfic.getId() + "/read";
     }
 
     @RequestMapping(value = {"/fanfics/{fanficid}"}, method = RequestMethod.POST)
     public String updateFanfic(Model model, Fanfic fanfic, @RequestPart(value = "files", required = false) MultipartFile file,
                                @RequestParam("stringtags") String addedTags,
-                               @RequestParam("selectedGenres") String selectedGenres,
-                               @PathVariable(value = "fanficid") Long id) throws IOException {
+                               @RequestParam(value = "selectedGenres", required = false) String selectedGenres,
+                               @PathVariable(value = "fanficid", required = false) Long id,
+                               BindingResult bindingResult) throws IOException {
+        fanficValidator.validate(fanfic, bindingResult);
+        fanficValidator.fanficGenresValidate(selectedGenres, bindingResult);
 
+        if (bindingResult.hasErrors()) {
+            Fanfic editFanfic = fanficService.findById(id);
+            model.addAttribute("currentFanfic", editFanfic);
+            model.addAttribute("allTags", tagService.findAllAsString());
+            model.addAttribute("allGenres", genreService.findAll());
+
+            return "editFanfic";
+        }
         Set<Genre> genres = genreService.getGenresFromString(selectedGenres);
         Set<Tag> tags = tagService.getTegsFromString(addedTags);
         Fanfic fanficBuf = fanficService.findById(id);
 
         fanficBuf.setFanficName(fanfic.getFanficName());
-        if (!file.isEmpty()) {
-            fanficBuf.setImage(imageService.uploadPhoto(file.getBytes()));
-        }
+
+        fanficBuf.setImage(imageService.uploadPhoto(file.getBytes()));
         fanficBuf.setGenres(genres);
         fanficBuf.setDescription(fanfic.getDescription());
         fanficBuf.setTags(tags);
@@ -104,6 +137,9 @@ public class FanficController {
     @RequestMapping(value = {"/fanfics/{fanficid}/edit"}, method = RequestMethod.GET)
     public String editFanfic(Model model, @PathVariable(value = "fanficid") Long id) {
         Fanfic fanficToEdit = fanficService.findById(id);
+        if(!userService.getLoginUser().hasRole("ADMIN") && !fanficToEdit.getCreator().getId().equals(userService.getLoginUser().getId())){
+            return "redirect:/profile";
+        }
         model.addAttribute("allGenres", genreService.findAll());
         model.addAttribute("allTags", tagService.findAllAsString());
         model.addAttribute("currentFanfic", fanficToEdit);
@@ -112,7 +148,7 @@ public class FanficController {
     }
 
     @RequestMapping(value = {"/fanfics/{fanficid}/page_edit/delete"})
-    public String pageEditDeleteFanfic(Model model, @PathVariable(value = "fanficid") Long id) {
+    public String pageEditDeleteFanfic(@PathVariable(value = "fanficid") Long id) {
         fanficService.deleteByFanficId(id);
 
         return "redirect:/profile";
@@ -120,7 +156,7 @@ public class FanficController {
 
     @ResponseBody
     @PostMapping(value = {"/fanfics/{fanficid}/page_profile/delete"})
-    public String pageProfileDeleteFanfic(Model model, @PathVariable(value = "fanficid") Long id) {
+    public String pageProfileDeleteFanfic(@PathVariable(value = "fanficid") Long id) {
         fanficService.deleteByFanficId(id);
         CustomUser customUser = userService.getLoginUser();
         StringBuilder stringBuilder = new StringBuilder();
@@ -149,42 +185,8 @@ public class FanficController {
     @ResponseBody
     @PostMapping(value = {"/fanfics/{fanficid}/page_welcome/delete"})
     public String pageWelcomeDeleteFanfic(Model model, @PathVariable(value = "fanficid") Long id) {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages");
-
         fanficService.deleteByFanficId(id);
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Fanfic fanfic : fanficService.findAll()) {
-            stringBuilder.append("<div style=\"width: 350px;\" class=\"col-sm-6 col-md-4\">\n" +
-                    "                    <div class=\"thumbnail\">\n" +
-                    "                        <div style=\"height: 250px;background-color: rgba(0,0,0,0.11); overflow: hidden;position: relative\">\n" +
-                    "                            <img style=\"width: 100%;  margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0;\"\n" +
-                    "                                 src=\"" + fanfic.getImage() + "\" alt=\"fanfic image\"/>\n" +
-                    "                        </div>\n" +
-                    "\n" +
-                    "                        <div class=\"caption\">\n" +
-                    "                            <h4>" + fanfic.getFanficName() + "</h4>\n" +
-                    "                            <p><b>" + resourceBundle.getString("label.genre") + "&#58" + "</b><span>" + fanfic.getGenresAsSting() + "</span>\n" +
-                    "                            </p>\n" +
-                    "                            <p><b>" + resourceBundle.getString("label.description") + "&#58" + "</b></p>\n" +
-                    "                            <div style=\"height: 70px; padding-bottom: 20px;\" class=\"box\">\n" +
-                    "                                <div>\n" +
-                    "                                    <p>" + fanfic.getDescription() + "</p>\n" +
-                    "                                </div>\n" +
-                    "                            </div>\n" +
-                    "                            <script>\n" +
-                    "                                $(function () {\n" +
-                    "                                    $('.box').truncateText();\n" +
-                    "                                });\n" +
-                    "                            </script>\n" +
-                    "\n" +
-                    "                            <p><a href=\"/readFanfic/" + fanfic.getId() + "\" " +
-                    "                                   class=\"btn btn-primary\">" + resourceBundle.getString("button.read") + "</a>\n" +
-                    "                                <a href=\"javascript:ajax_delete(" + fanfic.getId() + ")\" class=\"btn btn-primary\">" + resourceBundle.getString("button.delete") + "</a></p>\n" +
-                    "                        </div>\n" +
-                    "                    </div>\n" +
-                    "                </div>");
-        }
-        return stringBuilder.toString();
+        return fanficService.generateDeleteResponse();
     }
 
     @RequestMapping(value = "/fanfics/{id}/read", method = RequestMethod.GET)
@@ -248,15 +250,20 @@ public class FanficController {
 
     @RequestMapping(value = "/fanfics/search")
     public String fullTextSearch(Model model, String q) {
+        if (q.length() == 0){
+            return "redirect:/welcome";
+        }
+        model.addAttribute("currentUser", userService.getLoginUser());
         model.addAttribute("fanficsList", fulltextRepository.search(q));
         return "search";
     }
 
     @ResponseBody
     @PostMapping(value = "/rating")
-    public String rating(@RequestParam("vote-id") Long chapterId, @RequestParam("score") int score) {
+    public String rating(@RequestParam("vote-id") Long chapterId, @RequestParam("score") int score) throws InterruptedException {
 
         Chapter chapter = chapterService.findById(chapterId);
+
         CustomUser customUser = userService.getLoginUser();
 
         ChapterRating chapterRating = new ChapterRating();
@@ -271,6 +278,11 @@ public class FanficController {
         }
 
         ratingService.save(chapterRating);
+
+        Thread.sleep(400);
+        Fanfic fanfic = fanficService.findById(chapter.getOvnerFanfic().getId());
+        fanfic.setAverageRate(fanficService.calculateFanficAverage(fanfic));
+        fanficService.save(fanfic);
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg", "Спасибо. Ваш голос учтен");

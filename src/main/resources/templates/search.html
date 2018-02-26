@@ -38,7 +38,7 @@
             <div class="fresh-table">
 
                 <div class="toolbar">
-                    <a href="/fanfics/create" id="alertBtn" class="btn btn-default" th:text="#{label.addFanfic}"></a>
+                    <a sec:authorize="hasRole('ADMIN')" href="/fanfics/create" id="alertBtn" class="btn btn-default" th:text="#{label.addFanfic}"></a>
                 </div>
 
 
@@ -47,8 +47,11 @@
                     <th data-field="id">ID</th>
                     <th data-field="name" data-sortable="true" th:text="#{label.firstname}"></th>
                     <th data-field="chaptersCount" data-sortable="true" th:text="#{label.chaptersCount}"></th>
-                    <th data-field="actions" data-formatter="operateFormatter"
-                        data-events="operateEvents" th:text="#{label.actions}">Actions
+                    <th data-field="createDate" data-sortable="true" th:text="#{label.creationDate}"></th>
+                    <th data-field="author" data-sortable="true" th:text="#{title.author}"></th>
+
+                    <th data-field="actions" data-formatter="operateFormatter" sec:authorize="hasRole('ADMIN')"
+                        data-events="operateEvents" th:text="#{label.actions}">
                     </th>
                     </thead>
                     <tbody id="trable">
@@ -58,7 +61,8 @@
                         <td th:text="${fanfic.id}"></td>
                         <td><a th:text="${fanfic.fanficName}" th:href="'/fanfics/' + ${fanfic.id} + '/read'"></a></td>
                         <td th:text="${fanfic.chapters.size()}"></td>
-                        <td></td>
+                        <td th:text="${fanfic.dateAsString}"></td>
+                        <td ><a th:text="${fanfic.creator.username}" th:href="${'/profile/' + fanfic.creator.id}"></a></td>
                     </tr>
 
                     </tbody>

@@ -28,13 +28,22 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public Set<Genre> getGenresFromString(String selectedGenres){
-        String[] selectedGenresIds = selectedGenres.split(",");
         Set<Genre> genres = new HashSet<>();
+        if (selectedGenres == null){
+            return genres;
+        }
+        System.out.println("|" + selectedGenres + "|");
+        String[] selectedGenresIds = selectedGenres.split(",");
+        System.out.println(selectedGenresIds.length);
+
         for (String strId : selectedGenresIds) {
+            System.out.println("|"+ strId+"|");
             Long genreId = Long.parseLong(strId);
             Genre genre = genreRepository.findOne(genreId);
             genres.add(genre);
         }
+        System.out.println(genres);
+        System.out.println("exit");
         return genres;
     }
 }

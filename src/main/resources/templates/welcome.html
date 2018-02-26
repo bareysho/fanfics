@@ -18,64 +18,119 @@
 <body>
 <div th:replace="fragments/header :: header">&nbsp;</div>
 
-<div class="container">
+<div class="container" id="container">
     <div class="row">
         <div class="col-md-12">
-            <h2 th:text="#{label.allFanfics}"></h2>
+            <h2 th:text="#{label.top10byrating}"></h2>
             <hr>
-            <div id="fanfics">
-                <div th:each="fanfic : ${allFanfics}">
-                    <div style="width: 350px;" class="col-sm-6 col-md-4">
-                        <div class="thumbnail">
-                            <div style="height: 250px;background-color: rgba(0,0,0,0.11); overflow: hidden;position: relative">
-                                <img style="width: 100%;  margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0;"
-                                     th:src="${fanfic.image}" alt="fanfic image"/>
-                            </div>
 
-                            <div class="caption">
-                                <h4 th:text="${fanfic.fanficName}"></h4>
-                                <p><b th:text="#{label.genre} + '&#58 '"></b><span
-                                        th:text="${fanfic.getGenresAsSting()}"> </span>
-                                </p>
-                                <p><b th:text="#{label.description} + '&#58 '"></b></p>
-                                <div style="height: 70px; padding-bottom: 20px;" class="box">
-                                    <div>
-                                        <p th:text="${fanfic.description}"></p>
-                                    </div>
+            <div th:each="fanfic : ${top10byRating}">
+                <div style="width: 350px;" class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <div style="height: 250px;background-color: rgba(0,0,0,0.11); overflow: hidden;position: relative">
+                            <img style="width: 100%;  margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0;"
+                                 th:src="${fanfic.image}" alt="fanfic image"/>
+                        </div>
+
+                        <div class="caption">
+                            <h4 th:text="${fanfic.fanficName}"></h4>
+                            <p><b th:text="#{label.genre} + '&#58 '"></b><span
+                                    th:text="${fanfic.getGenresAsSting()}"> </span>
+                            </p>
+                            <p><b th:text="#{label.rating} + '&#58 '"></b><span
+                                    th:text="${fanfic.averageRate}"></span></p>
+                            <p><b th:text="#{title.author} + '&#58 '"></b><a th:text="${fanfic.creator.username}"
+                                                                             th:href="${'/profile/' + fanfic.creator.id}"></a>
+                            </p>
+                            <p><b th:text="#{label.description} + '&#58 '"></b></p>
+                            <div style="height: 70px; padding-bottom: 20px;" class="box">
+                                <div>
+                                    <p th:text="${fanfic.description}"></p>
                                 </div>
-                                <script>
-                                    $(function () {
-                                        $('.box').truncateText();
-                                    });
-                                </script>
-
-                                <p><a th:href="'/fanfics/' + ${fanfic.id} +'/read'" class="btn btn-primary btn-sm"
-                                      th:text="#{button.read}"></a>
-                                    <a th:if="${currentUser!=null and (currentUser.id == fanfic.creator.id or currentUser.hasRole('ADMIN'))}"
-                                       th:href="'/fanfics/' + ${fanfic.id} + '/edit'"
-                                       class="btn btn-primary btn-sm" th:text="#{button.edit}"></a>
-                                    <a th:if="${currentUser!=null and (currentUser.id == fanfic.creator.id or currentUser.hasRole('ADMIN'))}"
-                                       th:href="'javascript:ajax_delete(' + ${fanfic.id} + ')'"
-                                       class="btn btn-primary btn-sm"
-                                       th:text="#{button.delete}"></a>
-                                </p>
                             </div>
+
+                            <p><a th:href="'/fanfics/' + ${fanfic.id} +'/read'" class="btn btn-primary btn-sm"
+                                  th:text="#{button.read}"></a>
+                                <a th:if="${currentUser!=null and (currentUser.id == fanfic.creator.id or currentUser.hasRole('ADMIN'))}"
+                                   th:href="'/fanfics/' + ${fanfic.id} + '/edit'"
+                                   class="btn btn-primary btn-sm" th:text="#{button.edit}"></a>
+                                <a th:if="${currentUser!=null and (currentUser.id == fanfic.creator.id or currentUser.hasRole('ADMIN'))}"
+                                   th:href="'javascript:ajax_delete(' + ${fanfic.id} + ')'"
+                                   class="btn btn-primary btn-sm"
+                                   th:text="#{button.delete}"></a>
+                            </p>
+                            <p style="text-align: right; color: #8b8e8d" th:text="${fanfic.getDateAsString()}"></p>
                         </div>
                     </div>
                 </div>
             </div>
+
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <h2 th:text="#{label.top10byDate}"></h2>
+            <hr>
+
+            <div th:each="fanfic : ${top10byDate}">
+                <div style="width: 350px;" class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <div style="height: 250px;background-color: rgba(0,0,0,0.11); overflow: hidden;position: relative">
+                            <img style="width: 100%;  margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0;"
+                                 th:src="${fanfic.image}" alt="fanfic image"/>
+                        </div>
+
+                        <div class="caption">
+                            <h4 th:text="${fanfic.fanficName}"></h4>
+                            <p><b th:text="#{label.genre} + '&#58 '"></b><span
+                                    th:text="${fanfic.getGenresAsSting()}"> </span>
+                            </p>
+                            <p><b th:text="#{label.rating} + '&#58 '"></b><span
+                                    th:text="${fanfic.averageRate}"></span></p>
+                            <p><b th:text="#{title.author} + '&#58 '"></b><a th:text="${fanfic.creator.username}"
+                                                                             th:href="${'/profile/' + fanfic.creator.id}"></a>
+                            </p>
+                            <p><b th:text="#{label.description} + '&#58 '"></b></p>
+                            <div style="height: 70px; padding-bottom: 20px;" class="box">
+                                <div>
+                                    <p th:text="${fanfic.description}"></p>
+                                </div>
+                            </div>
+
+                            <p><a th:href="'/fanfics/' + ${fanfic.id} +'/read'" class="btn btn-primary btn-sm"
+                                  th:text="#{button.read}"></a>
+                                <a th:if="${currentUser!=null and (currentUser.id == fanfic.creator.id or currentUser.hasRole('ADMIN'))}"
+                                   th:href="'/fanfics/' + ${fanfic.id} + '/edit'"
+                                   class="btn btn-primary btn-sm" th:text="#{button.edit}"></a>
+                                <a th:if="${currentUser!=null and (currentUser.id == fanfic.creator.id or currentUser.hasRole('ADMIN'))}"
+                                   th:href="'javascript:ajax_delete(' + ${fanfic.id} + ')'"
+                                   class="btn btn-primary btn-sm"
+                                   th:text="#{button.delete}"></a>
+                            </p>
+                            <p style="text-align: right; color: #8b8e8d" th:text="${fanfic.getDateAsString()}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
 <script>
+    $(function () {
+        $('.box').truncateText();
+    });
+
     function ajax_delete(id) {
         $.ajax({
 
             type: 'POST',
             url: '/fanfics/' + id + '/page_welcome/delete',
             success: function (data) {
-                $("#fanfics").html(data);
+                $("#container").html(data);
             }
 
         });

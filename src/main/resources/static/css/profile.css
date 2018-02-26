@@ -9,3 +9,7 @@
 a{
     color: #777 !important;
 }
+img{
+    max-width: 265px;
+    width: 100%;
+}

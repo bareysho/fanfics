@@ -30,10 +30,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(CustomUser user) {
-        if (user.getRoles().size() == 0) {
-            Set<Role> roles = new HashSet<>();
-            roles.add(roleService.findByName("USER"));
-            user.setRoles(roles);
+        if(user.getRoles()!= null) {
+            if (user.getRoles().size() == 0) {
+                Set<Role> roles = new HashSet<>();
+                roles.add(roleService.findByName("USER"));
+                user.setRoles(roles);
+            }
         }
 
         userRepository.save(user);
@@ -95,5 +97,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUserById(Long id) {
         userRepository.removeCustomUserById(id);
+    }
+
+    @Override
+    public void setAdmin(Long id){
+        CustomUser customUser = userRepository.findById(id);
+        Set<Role> roles = customUser.getRoles();
+        roles.add(roleService.findByName("ADMIN"));
+        customUser.setRoles(roles);
+        userRepository.save(customUser);
     }
 }

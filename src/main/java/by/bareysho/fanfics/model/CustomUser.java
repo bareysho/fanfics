@@ -1,10 +1,13 @@
 package by.bareysho.fanfics.model;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Set;
 
@@ -19,6 +22,8 @@ public class CustomUser {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotNull
+    @Size(min=2, max=30)
     @Column(name = "username")
     private String username = "";
 
@@ -79,6 +84,19 @@ public class CustomUser {
             }
         }
         return has;
+    }
+
+    public String getRolesAsString(){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Role role: roles){
+            stringBuilder.append(role.getRoleName()).append(", ");
+        }
+        String s = stringBuilder.toString();
+        if (stringBuilder.length() > 0){
+            s = stringBuilder.toString().substring(0, stringBuilder.length()-2);
+        }
+
+        return s;
     }
 
 }

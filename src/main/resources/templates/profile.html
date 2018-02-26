@@ -11,7 +11,7 @@
     <link href="/css/dropify.min.css" rel="stylesheet">
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
     <link href="/css/card.css" rel="stylesheet">
-
+    <link href="/css/common.css" rel="stylesheet">
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
     <script type="text/javascript"
 
@@ -36,11 +36,60 @@
             <hr>
         </div>
 
-        <form th:action="'/users/' + ${currentUser.id}" th:object="${currentUser}" method="POST"
+        <form th:if="${!currentUser.hasRole('ADMIN') and currentUser.id != userInfo.id}"
+              enctype="multipart/form-data">
+            <div class="col-md-3">
+                <img th:src="${userInfo.profileImg}">
+            </div>
+            <div class="col-md-5">
+                <fieldset>
+                    <div class="row">
+                        <div class="form-group">
+                            <label class="control-label" th:text="#{button.username}" for="username"></label>
+
+                            <input name="textinput" th:placeholder="#{button.username}"
+                                   class="form-control input-md" value=""
+                                   th:attr="value=${userInfo.username}" disabled=""
+                                   type="text"/>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label" th:text="#{label.firstname}" for="username"></label>
+
+                            <input name="textinput" th:placeholder="#{label.firstname}"
+                                   class="form-control input-md" value="" th:attr="value=${userInfo.firstName}"
+                                   required="" disabled="" type="text"/>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label" th:text="#{label.lastname}" for="username"></label>
+
+                            <input name="textinput" th:placeholder="#{label.lastname}"
+                                   class="form-control input-md" value="" th:attr="value=${userInfo.lastName}"
+                                   required="" type="text" disabled=""/>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label" for="email">Email</label>
+                            <input name="textinput" placeholder="Email"
+                                   class="form-control input-md" value="" disabled=""
+                                   th:attr="value=${userInfo.email}"
+                                   required="" type="text">
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+
+
+        <form th:action="'/users/' + ${editUser.id}" th:object="${editUser}" method="POST"
+              th:if="${currentUser.id == userInfo.id or currentUser.hasRole('ADMIN')}"
               enctype="multipart/form-data">
             <div class="col-md-3">
                 <input type="file" name="files" id="input-file-now"
-                       th:attr="data-default-file=${currentUser.profileImg}"
+                       th:attr="data-default-file=${editUser.profileImg}"
                        class="dropify"/>
             </div>
             <div class="col-md-5">
@@ -50,9 +99,9 @@
                             <label class="control-label" th:text="#{button.username}" for="username"></label>
 
                             <input id="username" name="textinput" th:placeholder="#{button.username}"
-                                   class="form-control input-md" th:field="*{username}"
-                                   value="" th:attr="value=${currentUser.username}" disabled=""
-                                   required="" type="text"/>
+                                   class="form-control input-md" value=""
+                                   th:attr="value=${editUser.username}" disabled=""
+                                   type="text"/>
 
                         </div>
 
@@ -60,7 +109,7 @@
                             <label class="control-label" th:text="#{label.firstname}" for="username"></label>
 
                             <input id="firstname" name="textinput" th:placeholder="#{label.firstname}"
-                                   class="form-control input-md" value="" th:attr="value=${currentUser.firstName}"
+                                   class="form-control input-md" value="" th:attr="value=${editUser.firstName}"
                                    th:field="*{firstName}"
                                    required="" type="text"/>
                         </div>
@@ -70,15 +119,17 @@
                             <label class="control-label" th:text="#{label.lastname}" for="username"></label>
 
                             <input id="lastname" name="textinput" th:placeholder="#{label.lastname}"
-                                   class="form-control input-md" value="" th:attr="value=${currentUser.lastName}"
+                                   class="form-control input-md" value="" th:attr="value=${editUser.lastName}"
                                    required="" type="text" th:field="*{lastName}"/>
                         </div>
 
                         <div class="form-group">
                             <label class="control-label" for="email">Email</label>
+                            <p><span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                            </p>
                             <input id="email" name="textinput" placeholder="Email"
                                    class="form-control input-md" value="" th:field="*{email}"
-                                   th:attr="value=${currentUser.email}"
+                                   th:attr="value=${editUser.email}"
                                    trequired="" type="text">
                         </div>
 
@@ -115,24 +166,37 @@
             <h2 th:text="#{label.userFanfics}"></h2>
             <hr>
             <div class="fresh-table">
-                <div class="toolbar">
-                    <a href="/fanfics/create" id="alertBtn" class="btn btn-default" th:text="#{label.addFanfic}"></a>
+                <div class="toolbar" >
+                    <a href="/fanfics/create" id="alertBtn" class="btn btn-default" th:text="#{label.addFanfic}"
+                       th:if="${currentUser.id == userInfo.id or currentUser.hasRole('ADMIN')}"></a>
                 </div>
                 <table id="fresh-table" class="table">
                     <thead>
                     <th data-field="id">ID</th>
-                    <th data-field="name" data-sortable="true">Name</th>
-                    <th data-field="chaptersCount" data-sortable="true">Chapters count</th>
-                    <th data-field="actions" data-formatter="operateFormatter"
-                        data-events="operateEvents">Actions
+                    <th data-field="name" data-sortable="true" th:text="#{label.firstname}"></th>
+                    <th data-field="chaptersCount" data-sortable="true" th:text="#{label.chaptersCount}"></th>
+                    <th data-field="createDate" data-sortable="true" th:text="#{label.creationDate}"></th>
+                    <th data-field="author" data-sortable="true" th:text="#{title.author}"></th>
+                    <th data-field="actions" data-formatter="operateFormatter" th:if="${currentUser.id == userInfo.id or currentUser.hasRole('ADMIN')}"
+                        data-events="operateEvents" data-sortable="false" th:text="#{label.actions}">
                     </th>
                     </thead>
-                    <tbody id="trable">
-                    <tr th:each="fanfic : ${userFanfics}">
+                    <tbody id="trable" th:if="${currentUser.id != userInfo.id}">
+                    <tr th:each="fanfic : ${userInfo.fanfics}">
                         <td th:text="${fanfic.id}"></td>
                         <td><a th:text="${fanfic.fanficName}" th:href="'/fanfics/' + ${fanfic.id} + '/read'"></a></td>
                         <td th:text="${fanfic.chapters.size()}"></td>
-                        <td></td>
+                        <td th:text="${fanfic.dateAsString}"></td>
+                        <td ><a th:text="${fanfic.creator.username}" th:href="${'/profile/' + fanfic.creator.id}"></a></td>
+                    </tr>
+                    </tbody>
+                    <tbody id="trable" th:if="${currentUser.id == userInfo.id}">
+                    <tr th:each="fanfic : ${currentUser.fanfics}">
+                        <td th:text="${fanfic.id}"></td>
+                        <td><a th:text="${fanfic.fanficName}" th:href="'/fanfics/' + ${fanfic.id} + '/read'"></a></td>
+                        <td th:text="${fanfic.chapters.size()}"></td>
+                        <td th:text="${fanfic.dateAsString}"></td>
+                        <td ><a th:text="${fanfic.creator.username}" th:href="${'/profile/' + fanfic.creator.id}"></a></td>
                     </tr>
                     </tbody>
                 </table>

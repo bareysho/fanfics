@@ -72,6 +72,6 @@ public class ChapterController {
 
         chapterService.deleteChaptersById(chapterid);
 
-        return "redirect:/readFanfic/" + fanficid;
+        return "redirect:/fanfics/" + fanficid + "/read";
     }
 }

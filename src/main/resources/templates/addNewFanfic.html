@@ -2,10 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 
-<!DOCTYPE html>
 <html>
 <head>
-    <title th:title="#{label.addFanfic}"></title>
+    <title th:text="#{label.addFanfic}"></title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
@@ -18,6 +17,7 @@
           rel="stylesheet" type="text/css">
 
     <link href="/css/demo.css" rel="stylesheet">
+    <link href="/css/common.css" rel="stylesheet">
     <link href="/css/dropify.min.css" rel="stylesheet">
     <link href="/css/jquery.tagit.css" rel="stylesheet" type="text/css">
 
@@ -48,21 +48,38 @@
 
                 <div class="form-group">
                     <label for="fanficName"><h4 th:text="#{label.title}"></h4></label>
+                    <sup style="color: red">*</sup>
+                    <p><span class="error" th:if="${#fields.hasErrors('fanficName')}" th:errors="*{fanficName}"></span>
+                    </p>
                     <input style="height: 35px" type="text" th:field="*{fanficName}" class="form-control"
                            id="fanficName"
                            th:placeholder="#{label.title}"/>
+
                 </div>
 
                 <div class="form-group">
+
                     <label for="example-getting-started"><h4 th:text="#{label.genre}"></h4></label>
-                    <p>
-                    <select class="form-control" name="selectedGenres" id="example-getting-started"
-                            multiple="multiple">
+                    <sup style="color: red">*</sup>
+                    <p><span class="error" th:if="${#fields.hasErrors('genres')}" th:errors="*{genres}"></span></p>
+                    <p><select class="form-control" name="selectedGenres" id="example-getting-started"
+                               multiple="multiple">
                         <option th:each="genre : ${allGenres}" th:utext="${genre.genreName}"
                                 th:value="${genre.id}">
                         </option>
-
                     </select></p>
+                    <script type="text/javascript" th:inline="javascript">
+                        $(function () {
+                            var sampleTags = [[${allTags}]];
+
+                            $('#myTags').tagit();
+
+                            $('#singleFieldTags2').tagit({
+                                availableTags: sampleTags
+                            });
+
+                        });
+                    </script>
                 </div>
 
                 <div class="form-group">
@@ -96,19 +113,6 @@
         </div>
     </div>
 </div>
-
-<script type="text/javascript" th:inline="javascript">
-    $(function () {
-        var sampleTags = [[${allTags}]];
-
-        $('#myTags').tagit();
-
-        $('#singleFieldTags2').tagit({
-            availableTags: sampleTags
-        });
-
-    });
-</script>
 
 <script type="text/javascript">
     $(document).ready(function () {

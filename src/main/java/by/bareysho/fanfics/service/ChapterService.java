@@ -11,4 +11,5 @@ public interface ChapterService {
     List<Chapter> findByFanficId(Long id);
     void deleteChaptersByFanficId(Long id);
     void deleteChaptersById(Long id);
+    double calculateChapterAverage(Long chapterId);
 }

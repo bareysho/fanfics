@@ -30,4 +30,6 @@ public interface UserService {
 
     CustomUser findByConfirmationToken(String token);
 
+    void setAdmin(Long id);
+
 }

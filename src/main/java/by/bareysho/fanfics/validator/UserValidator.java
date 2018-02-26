@@ -1,6 +1,7 @@
 package by.bareysho.fanfics.validator;
 
 import by.bareysho.fanfics.model.CustomUser;
+import by.bareysho.fanfics.model.Fanfic;
 import by.bareysho.fanfics.service.UserService;
 import org.apache.commons.validator.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+
+import java.util.ResourceBundle;
 
 @Component
 public class UserValidator implements Validator {
@@ -24,8 +27,8 @@ public class UserValidator implements Validator {
     public void validate(Object o, Errors errors) {
         CustomUser user = (CustomUser) o;
         validateUsername(user.getUsername(), errors);
-        validatePassword(user.getPassword(), errors);
-        validatePasswordConfirmation(user.getPassword(), user.getConfirmPassword(), errors);
+        validateFirstName(user.getFirstName(), errors);
+        validateFirstName(user.getLastName(), errors);
         validateEmail(user.getEmail(), errors);
     }
 
@@ -39,26 +42,44 @@ public class UserValidator implements Validator {
         }
     }
 
+    public void validateEmail(String email, Errors errors) {
+        CustomUser customUser = userService.getLoginUser();
+        EmailValidator emailValidator = EmailValidator.getInstance();
+        if (!email.equals("") && customUser.hasRole("SOC_USER")) {
+            if (!emailValidator.isValid(email))
+                errors.rejectValue("email", "userForm.email");
+
+            if (userService.findByEmail(email) != null && !customUser.getEmail().equals(email))
+                errors.rejectValue("email", "userForm.emailDuplicate");
+        }
+    }
+
+    public void validateFirstName(String firstName, Errors errors){
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "Required", "Required");
+        if(firstName.length() < 2 || firstName.length() > 20){
+            errors.rejectValue("firstName", "userForm.firstNameError");
+        }
+    }
+
+    public void validateLastName(String lastName, Errors errors){
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "Required", "Required");
+        if(lastName.length() < 2 || lastName.length() > 20){
+            errors.rejectValue("lastName", "userForm.lastNameError");
+        }
+    }
+
     private void validatePassword(String password, Errors errors) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "Required");
         if (password.length() < 8 || password.length() > 32)
-            errors.rejectValue("password", "Size.userForm.password");
-        if(userService.findByPassword(password)!=null)
-            errors.rejectValue("password", "Duplicate.userForm.password");
-
+            errors.rejectValue("password", "userForm.password");
     }
 
     private void validatePasswordConfirmation(String passwordConfirmation, String password, Errors errors) {
         if (!passwordConfirmation.equals(password)) {
-            errors.rejectValue("confirmPassword", "Different.userForm.password");
+            errors.rejectValue("confirmPassword", "userForm.passwordConfirametion");
         }
     }
 
-    private void validateEmail(String email, Errors errors) {
-        EmailValidator emailValidator = EmailValidator.getInstance();
-        if (!emailValidator.isValid(email))
-            errors.rejectValue("email", "Invalid.userForm.email");
-        if(userService.findByEmail(email)!=null)
-            errors.rejectValue("email", "Duplicate.userForm.email");
-    }
+
+
 }
