@@ -4,6 +4,7 @@ import by.bareysho.fanfics.model.CustomUser;
 import by.bareysho.fanfics.repository.UserRepository;
 import by.bareysho.fanfics.model.Role;
 
+import com.sun.deploy.security.BlockedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

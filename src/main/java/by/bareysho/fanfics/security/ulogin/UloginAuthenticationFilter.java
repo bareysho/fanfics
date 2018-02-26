@@ -40,14 +40,17 @@ public class UloginAuthenticationFilter {
     @Autowired
     private UloginAuthentificationProvider uloginAuthProvider;
 
-    public CustomUser attemptAuthentication(WebRequest request) {
+    public String attemptAuthentication(WebRequest request) {
 
         String token = request.getParameterValues("token")[0];
         ULoginAuthToken authRequest = new ULoginAuthToken(token);
 
-        CustomUser loggedUser;
         CustomUser customUser = (CustomUser) uloginAuthProvider.authenticate(authRequest).getPrincipal();
         CustomUser dbUser = userService.findByUsername(customUser.getUsername());
+
+        if (dbUser.isBanned()){
+            return "redirect:/banned";
+        }
 
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 
@@ -61,19 +64,17 @@ public class UloginAuthenticationFilter {
             customUser.setRoles(roles);
 
             userService.save(customUser);
-            loggedUser = customUser;
 
         } else {
 
             for (Role role : dbUser.getRoles()) {
                 grantedAuthorities.add(new SimpleGrantedAuthority(role.getRoleName()));
             }
-            loggedUser = dbUser;
         }
 
         Authentication authentication = uloginAuthProvider.authenticate(new ULoginAuthToken(token, grantedAuthorities));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return loggedUser;
+        return "redirect:/";
     }
 }

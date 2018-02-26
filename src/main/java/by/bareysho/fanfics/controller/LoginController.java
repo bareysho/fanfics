@@ -1,6 +1,7 @@
 package by.bareysho.fanfics.controller;
 
 import by.bareysho.fanfics.security.ulogin.UloginAuthenticationFilter;
+import by.bareysho.fanfics.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ public class LoginController {
 
     @RequestMapping(value={"/login"}, method = RequestMethod.GET)
     public ModelAndView login(Model model){
+
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("login");
         return modelAndView;
@@ -24,8 +26,11 @@ public class LoginController {
 
     @RequestMapping(value = "/ulogin", method = RequestMethod.POST)
     public String checkAuthorization(WebRequest request) {
-        uloginAuthProvider.attemptAuthentication(request);
+        return uloginAuthProvider.attemptAuthentication(request);
+    }
 
-        return "redirect:";
+    @RequestMapping(value = "/banned")
+    public String banned(){
+        return "banned";
     }
 }

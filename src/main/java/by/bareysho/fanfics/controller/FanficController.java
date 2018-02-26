@@ -149,14 +149,21 @@ public class FanficController {
 
     @RequestMapping(value = {"/fanfics/{fanficid}/page_edit/delete"})
     public String pageEditDeleteFanfic(@PathVariable(value = "fanficid") Long id) {
+        Fanfic fanficToEdit = fanficService.findById(id);
+        if(!userService.getLoginUser().hasRole("ADMIN") && !fanficToEdit.getCreator().getId().equals(userService.getLoginUser().getId())){
+            return "redirect:/profile";
+        }
         fanficService.deleteByFanficId(id);
-
         return "redirect:/profile";
     }
 
     @ResponseBody
     @PostMapping(value = {"/fanfics/{fanficid}/page_profile/delete"})
     public String pageProfileDeleteFanfic(@PathVariable(value = "fanficid") Long id) {
+        Fanfic fanficToEdit = fanficService.findById(id);
+        if(!userService.getLoginUser().hasRole("ADMIN") && !fanficToEdit.getCreator().getId().equals(userService.getLoginUser().getId())){
+            return "redirect:/profile";
+        }
         fanficService.deleteByFanficId(id);
         CustomUser customUser = userService.getLoginUser();
         StringBuilder stringBuilder = new StringBuilder();
@@ -185,6 +192,10 @@ public class FanficController {
     @ResponseBody
     @PostMapping(value = {"/fanfics/{fanficid}/page_welcome/delete"})
     public String pageWelcomeDeleteFanfic(Model model, @PathVariable(value = "fanficid") Long id) {
+        Fanfic fanficToEdit = fanficService.findById(id);
+        if(!userService.getLoginUser().hasRole("ADMIN") && !fanficToEdit.getCreator().getId().equals(userService.getLoginUser().getId())){
+            return "redirect:/profile";
+        }
         fanficService.deleteByFanficId(id);
         return fanficService.generateDeleteResponse();
     }
@@ -261,11 +272,8 @@ public class FanficController {
     @ResponseBody
     @PostMapping(value = "/rating")
     public String rating(@RequestParam("vote-id") Long chapterId, @RequestParam("score") int score) throws InterruptedException {
-
         Chapter chapter = chapterService.findById(chapterId);
-
         CustomUser customUser = userService.getLoginUser();
-
         ChapterRating chapterRating = new ChapterRating();
 
         if (chapter.checkReated(customUser)) {
